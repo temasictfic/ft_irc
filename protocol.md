@@ -29,12 +29,13 @@ Channel operators (or “chanops”) on a given channel are considered to ‘run
 IRC servers may also define other levels of channel moderation. These can include ‘halfop’ (half operator), ‘protected’ (protected user/operator), ‘founder’ (channel founder), and any other positions the server wishes to define. These moderation levels have varying privileges and can execute, and not execute, various channel management commands based on what the server defines.
 
 The commands which may only be used by channel moderators include:
-
+>
 KICK: Eject a client from the channel
 MODE: Change the channel’s modes
 INVITE: Invite a client to an invite-only channel (mode +i)
 TOPIC: Change the channel topic in a mode +t channel
 Channel moderators are identified by the channel member prefix ('@' for standard channel operators, '%' for halfops) next to their nickname whenever it is associated with a channel (e.g. replies to the NAMES, WHO, and WHOIS commands).
+>
 
 Specific prefixes and moderation levels are covered in the Channel Membership Prefixes section.
 
