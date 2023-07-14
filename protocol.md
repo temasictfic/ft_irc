@@ -1,8 +1,8 @@
 
-#Server
+# Server
 Servers SHOULD pick a name which contains a dot character (".", 0x2E). This can help clients disambiguate between server names and nicknames in a message source.
 
-#Clients
+# Clients
 Nicknames are non-empty strings with the following restrictions:
 
 They MUST NOT contain any of the following characters: space (' ', 0x20), comma (',', 0x2C), asterisk ('*', 0x2A), question mark ('?', 0x3F), exclamation mark ('!', 0x21), at sign ('@', 0x40).
@@ -10,7 +10,7 @@ They MUST NOT start with any of the following characters: dollar ('$', 0x24), co
 They MUST NOT start with a character listed as a channel type prefix.
 They SHOULD NOT contain any dot character ('.', 0x2E).
 
-#Channels
+# Channels
 Channel names are strings (beginning with specified prefix characters). Apart from the requirement of the first character being a valid channel type prefix character; the only restriction on a channel name is that it may not contain any spaces (' ', 0x20), a control G / BELL ('^G', 0x07), or a comma (',', 0x2C) (which is used as a list item separator by the protocol).
 
 There are several types of channels used in the IRC protocol. The first standard type of channel is a regular channel, which is known to all servers that are connected to the network. The prefix character for this type of channel is ('#', 0x23). The second type are server-specific or local channels, where the clients connected can only see and talk to other clients on the same server. The prefix character for this type of channel is ('&', 0x26). Other types of channels are described in the Channel Types section.
@@ -23,7 +23,7 @@ Channels also contain a topic. The topic is a line shown to all users when they 
 
 A user may be joined to several channels at once, but a limit may be imposed by the server as to how many channels a client can be in at one time. This limit is specified by the CHANLIMIT RPL_ISUPPORT parameter. See the Feature Advertisement section for more details on RPL_ISUPPORT.
 
-#Channel Operators
+# Channel Operators
 Channel operators (or “chanops”) on a given channel are considered to ‘run’ or ‘own’ that channel.
 
 IRC servers may also define other levels of channel moderation. These can include ‘halfop’ (half operator), ‘protected’ (protected user/operator), ‘founder’ (channel founder), and any other positions the server wishes to define. These moderation levels have varying privileges and can execute, and not execute, various channel management commands based on what the server defines.
@@ -38,23 +38,23 @@ Channel moderators are identified by the channel member prefix ('@' for standard
 
 Specific prefixes and moderation levels are covered in the Channel Membership Prefixes section.
 
-#Connection Setup
+# Connection Setup
 IRC client-server connections work over TCP/IP. The standard ports for client-server connections are TCP/6667 for plaintext, and TCP/6697 for TLS connections.
 
-#Client-to-Server Protocol Structure
+# Client-to-Server Protocol Structure
 While a client is connected to a server, they send a stream of bytes to each other. This stream contains messages separated by CR ('\r', 0x0D) and LF ('\n', 0x0A). These messages may be sent at any time from either side, and may generate zero or more reply messages.
 
 Software SHOULD use the UTF-8 character encoding to encode and decode messages, with fallbacks as described in the Character Encodings implementation considerations appendix.
 
 Names of IRC entities (clients, servers, channels) are casemapped. This prevents, for example, someone having the nickname 'Dan' and someone else having the nickname 'dan', confusing other users. Servers MUST advertise the casemapping they use in the RPL_ISUPPORT numeric that’s sent when connection registration has completed.
 
-#Message Format
+# Message Format
 An IRC message is a single line, delimited by a pair of CR ('\r', 0x0D) and LF ('\n', 0x0A) characters.
 
 When reading messages from a stream, read the incoming data into a buffer. Only parse and process a message once you encounter the \r\n at the end of it. If you encounter an empty message, silently ignore it.
 When sending messages, ensure that a pair of \r\n characters follows every single message your software sends out.
 
-#Source
+# Source
   source          ::=  <servername> / ( <nickname> [ "!" <user> ] [ "@" <host> ] )
   nick            ::=  <any characters except NUL, CR, LF, chantype character, and SPACE> <possibly empty sequence of any characters except NUL, CR, LF, and SPACE>
   user            ::=  <sequence of any characters except NUL, CR, LF, and SPACE>
@@ -66,13 +66,13 @@ Clients MUST NOT include a source when sending a message.
 
 Servers MAY include a source on any message, and MAY leave a source off of any message. Clients MUST be able to process any given message the same way whether it contains a source or does not contain one.
 
-#Command
+# Command
   command         ::=  letter* / 3digit
 The command must either be a valid IRC command or a numeric (a three-digit number represented as text).
 
 Information on specific commands / numerics can be found in the Client Messages and Numerics sections, respectively.
 
-#Parameters
+# Parameters
 This is the format of the parameters part:
 
   parameter       ::=  *( SPACE middle ) [ SPACE ":" trailing ]
@@ -100,7 +100,7 @@ Here are some examples of messages and how the parameters would be represented a
   :dan!d@localhost PRIVMSG #chan ::-)   ->  ["#chan", ":-)"]
 As these examples show, a trailing parameter (a final parameter with a preceding ':') has the same semantics as any other parameter, and MUST NOT be treated specially or stored separately once the ':' is stripped.
 
-#Compatibility with incorrect software
+# Compatibility with incorrect software
 Servers SHOULD handle single \n character, and MAY handle a single \r character, as if it was a \r\n pair, to support existing clients that might send this. However, clients and servers alike MUST NOT send single \r or \n characters.
 
 Servers and clients SHOULD ignore empty lines.
@@ -112,12 +112,12 @@ Truncate on the 510th byte (and add \r\n at the end) or, preferably, on the last
 Ignore the message or close the connection – but this may be confusing to users of buggy clients.
 Finally, clients and servers SHOULD NOT use more than one space (\x20) character as SPACE as defined in the grammar above.
 
-#Numeric Replies
+# Numeric Replies
 Most messages sent from a client to a server generates a reply of some sort. The most common form of reply is the numeric reply, used for both errors and normal replies. Distinct from a normal message, a numeric reply MUST contain a <source> and use a three-digit numeric as the command. A numeric reply SHOULD contain the target of the reply as the first parameter of the message. A numeric reply is not allowed to originate from a client.
 
 In all other respects, a numeric reply is just like a normal message. A list of numeric replies is supplied in the Numerics section.
 
-#Connection Registration
+# Connection Registration
 Immediately upon establishing a connection the client must attempt registration, without waiting for any banner message from the server.
 
 Until registration is complete, only a limited subset of commands SHOULD be accepted by the server. This is because it makes sense to require a registered (fully connected) client connection before allowing commands such as JOIN, PRIVMSG and others.
@@ -152,7 +152,7 @@ Upon successful completion of the registration process, the server MUST send, in
 
 The first parameter of the RPL_WELCOME (001) message is the nickname assigned by the network to the client. Since it may differ from the nickname the client requested with the NICK command (due to, e.g. length limits or policy restrictions on nicknames), the client SHOULD use this parameter to determine its actual nickname at the time of connection. Subsequent nickname changes, client-initiated or not, will be communicated by the server sending a NICK message.
 
-#Capability Negotiation
+# Capability Negotiation
 Capability Negotiation is a mechanism for the negotiation of protocol extensions, known as client capabilities, that makes sure servers implementing backwards-incompatible protocol extensions still interoperate with existing clients, and vice-versa.
 
 Clients implementing capability negotiation will still interoperate with servers that do not implement it; similarly, servers that implement capability negotiation will successfully communicate with clients that do not implement it.
@@ -165,12 +165,12 @@ Capability negotiation is started by the client issuing a CAP LS 302 command (in
 
 If used during initial registration, and the server supports capability negotiation, the CAP command will suspend registration. Once capability negotiation has ended the registration process will continue.
 
-#Client Messages
+# Client Messages
 In message descriptions, ‘command’ refers to the message’s behaviour when sent from a client to the server. Similarly, ‘Command Examples’ represent example messages sent from a client to the server, and ‘Message Examples’ represent example messages sent from the server to a client. If a command is sent from a client to a server with less parameters than the command requires to be processed, the server will reply with an ERR_NEEDMOREPARAMS (461) numeric and the command will fail.
 
 In the "Parameters:" section, optional parts or parameters are noted with square brackets as such: "[<param>]". Curly braces around a part of parameter indicate that it may be repeated zero or more times, for example: "<key>{,<key>}" indicates that there must be at least one <key>, and that there may be additional keys separated by the comma (",", 0x2C) character.
 
-PASS message
+## PASS message
      Command: PASS
   Parameters: <password>
 The PASS command is used to set a ‘connection password’. If set, the password must be set before any attempt to register the connection is made. This requires that clients send a PASS command before sending the NICK / USER combination.
@@ -190,7 +190,7 @@ Command Example:
 
   PASS secretpasswordhere
 
-NICK message
+## NICK message
      Command: NICK
   Parameters: <nickname>
 The NICK command is used to give the client a nickname or change the previous one.
@@ -222,7 +222,7 @@ Message Examples:
   :dan-!d@localhost NICK Mamoped
                             ; dan- changed his nickname to Mamoped.
 
-USER message
+## USER message
      Command: USER
   Parameters: <username> 0 * <realname>
 The USER command is used at the beginning of a connection to specify the username and realname of a new user.
@@ -258,7 +258,7 @@ Command Examples:
                               ; User gets registered with username
                               "danp" and real name "Ronnie Reagan"
 
-PING message
+## PING message
      Command: PING
   Parameters: <token>
 The PING command is sent by either clients or servers to check the other side of the connection is still connected and/or to check for connection latency, at the application layer.
@@ -279,7 +279,7 @@ Deprecated Numeric Reply:
 
 ERR_NOSUCHSERVER (402)
 
-PONG message
+## PONG message
      Command: PONG
   Parameters: [<server>] <token>
 The PONG command is used as a reply to PING commands, by both clients and servers. The <token> should be the same as the one in the PING message that triggered this PONG.
@@ -290,7 +290,7 @@ Numeric Replies:
 
 None
 
-QUIT message
+## QUIT message
     Command: QUIT
  Parameters: [<reason>]
 The QUIT command is used to terminate a client’s connection to the server. The server acknowledges this by replying with an ERROR message and closing the connection to the client.
@@ -314,12 +314,12 @@ Message Example:
                                    the message: "Quit: Bye for now!"
 
 
-#Channel Operations
+# Channel Operations
 This group of messages is concerned with manipulating channels, their properties (channel modes), and their contents (typically clients).
 
 These commands may be requests to the server, in which case the server will or will not grant the request. If a ‘request’ is granted, it will be acknowledged by the server sending a message containing the same information back to the client. This is to tell the user that the request was successful. These sort of ‘request’ commands will be noted in the message information.
 
-#JOIN message
+## JOIN message
      Command: JOIN
   Parameters: <channel>{,<channel>} [<key>{,<key>}]
   Alt Params: 0
@@ -374,7 +374,7 @@ Message Examples:
 
   :dan-!d@localhost JOIN #test    ; dan- is joining the channel #test
 
-#PART message
+## PART message
      Command: PART
   Parameters: <channel>{,<channel>} [<reason>]
 The PART command removes the client from the given channel(s). On sending a successful PART command, the user will receive a PART message from the server for each channel they have been removed from. <reason> is the reason that the client has left the channel(s).
@@ -398,7 +398,7 @@ Message Examples:
 
   :dan-!d@localhost PART #test    ; dan- is leaving the channel #test
 
-#TOPIC message
+## TOPIC message
      Command: TOPIC
   Parameters: <channel> [<topic>]
 The TOPIC command is used to change or view the topic of the given channel. If <topic> is not given, either RPL_TOPIC or RPL_NOTOPIC is returned specifying the current channel topic or lack of one. If <topic> is an empty string, the topic for the channel will be cleared.
@@ -431,7 +431,7 @@ Command Examples:
 
   TOPIC #test                     ; Checking the topic for "#test"
 
-#NAMES message
+## NAMES message
      Command: NAMES
   Parameters: <channel>{,<channel>}
 The NAMES command is used to view the nicknames joined to a channel and their channel membership prefixes. The param of this command is a list of channel names, delimited by a comma (",", 0x2C) character.
@@ -453,7 +453,7 @@ Command Examples:
                                   the network, which SHOULD be responded to
                                   as specified above.
 
-#LIST message
+## LIST message
      Command: LIST
   Parameters: [<channel>{,<channel>}] [<elistcond>{,<elistcond>}]
 The LIST command is used to get a list of channels along with some information about each channel. Both parameters to this command are optional as they have different syntaxes.
@@ -474,7 +474,7 @@ Command Examples:
   LIST #twilight_zone,#42         ; Command to list the channels
                                   "#twilight_zone" and "#42".
 
-#INVITE message
+## INVITE message
      Command: INVITE
   Parameters: <nickname> <channel>
 The INVITE command is used to invite a user to a channel. The parameter <nickname> is the nickname of the person to be invited to the target channel <channel>.
@@ -505,7 +505,7 @@ Message Examples:
   :dan-!d@localhost INVITE Wiz #test    ; dan- has invited Wiz
                                         to the channel #test
 
-#KICK message
+## KICK message
       Command: KICK
    Parameters: <channel> <user> *( "," <user> ) [<comment>]
 The KICK command can be used to request the forced removal of a user from a channel. It causes the <user> to be removed from the <channel> by force. If no comment is given, the server SHOULD use a default message instead.
@@ -539,3 +539,241 @@ Examples:
                                    ; KICK message on channel #Finnish
                                    from WiZ to remove John from channel
 
+# Sending Messages
+## PRIVMSG message
+     Command: PRIVMSG
+  Parameters: <target>{,<target>} <text to be sent>
+The PRIVMSG command is used to send private messages between users, as well as to send messages to channels. <target> is the nickname of a client or the name of a channel.
+
+If <target> is a channel name and the client is banned and not covered by a ban exception, the message will not be delivered and the command will silently fail. Channels with the moderated mode active may block messages from certain users. Other channel modes may affect the delivery of the message or cause the message to be modified before delivery, and these modes are defined by the server software and configuration being used.
+
+If a message cannot be delivered to a channel, the server SHOULD respond with an ERR_CANNOTSENDTOCHAN (404) numeric to let the user know that this message could not be delivered.
+
+If <target> is a channel name, it may be prefixed with one or more channel membership prefix character (@, +, etc) and the message will be delivered only to the members of that channel with the given or higher status in the channel. Servers that support this feature will list the prefixes which this is supported for in the STATUSMSG RPL_ISUPPORT parameter, and this SHOULD NOT be attempted by clients unless the prefix has been advertised in this token.
+
+If <target> is a user and that user has been set as away, the server may reply with an RPL_AWAY (301) numeric and the command will continue.
+
+The PRIVMSG message is sent from the server to client to deliver a message to that client. The <source> of the message represents the user or server that sent the message, and the <target> represents the target of that PRIVMSG (which may be the client, a channel, etc).
+
+When the PRIVMSG message is sent from a server to a client and <target> starts with a dollar character ('$', 0x24), the message is a broadcast sent to all clients on one or multiple servers.
+
+Numeric Replies:
+
+ERR_NOSUCHNICK (401)
+ERR_NOSUCHSERVER (402)
+ERR_CANNOTSENDTOCHAN (404)
+ERR_TOOMANYTARGETS (407)
+ERR_NORECIPIENT (411)
+ERR_NOTEXTTOSEND (412)
+ERR_NOTOPLEVEL (413)
+ERR_WILDTOPLEVEL (414)
+RPL_AWAY (301)
+
+Command Examples:
+
+  PRIVMSG Angel :yes I'm receiving it !
+                                  ; Command to send a message to Angel.
+
+  PRIVMSG %#bunny :Hi! I have a problem!
+                                  ; Command to send a message to halfops
+                                  and chanops on #bunny.
+
+  PRIVMSG @%#bunny :Hi! I have a problem!
+                                  ; Command to send a message to halfops
+                                  and chanops on #bunny. This command is
+                                  functionally identical to the above
+                                  command.
+Message Examples:
+
+  :Angel PRIVMSG Wiz :Hello are you receiving this message ?
+                                  ; Message from Angel to Wiz.
+
+  :dan!~h@localhost PRIVMSG #coolpeople :Hi everyone!
+                                  ; Message from dan to the channel
+                                  #coolpeople
+
+## NOTICE message
+     Command: NOTICE
+  Parameters: <target>{,<target>} <text to be sent>
+The NOTICE command is used to send notices between users, as well as to send notices to channels. <target> is interpreted the same way as it is for the PRIVMSG command.
+
+The NOTICE message is used similarly to PRIVMSG. The difference between NOTICE and PRIVMSG is that automatic replies must never be sent in response to a NOTICE message. This rule also applies to servers – they must not send any error back to the client on receipt of a NOTICE command. The intention of this is to avoid loops between a client automatically sending something in response to something it received. This is typically used by ‘bots’ (a client with a program, and not a user, controlling their actions) and also for server messages to clients.
+
+One thing for bot authors to note is that the NOTICE message may be interpreted differently by various clients. Some clients highlight or interpret any NOTICE sent to a channel in the same way that a PRIVMSG with their nickname gets interpreted. This means that users may be irritated by the use of NOTICE messages rather than PRIVMSG messages by clients or bots, and they are not commonly used by client bots for this reason.
+
+# User-Based Queries
+## WHO message
+     Command: WHO
+  Parameters: <mask>
+This command is used to query a list of users who match the provided mask. The server will answer this command with zero, one or more RPL_WHOREPLY, and end the list with RPL_ENDOFWHO.
+
+The mask can be one of the following:
+
+A channel name, in which case the channel members are listed.
+An exact nickname, in which case a single user is returned.
+A mask pattern, in which case all visible users whose nickname matches are listed. Servers MAY match other user-specific values, such as the hostname, server, real name or username. Servers MAY not support mask patterns and return an empty list.
+Visible users are users who aren’t invisible (user mode +i) and who don’t have a common channel with the requesting client. Servers MAY filter or limit visible users replies arbitrarily.
+
+Numeric Replies:
+
+RPL_WHOREPLY (352)
+RPL_ENDOFWHO (315)
+ERR_NOSUCHSERVER (402)
+
+Examples
+Command Examples:
+
+  WHO emersion        ; request information on user "emersion"
+  WHO #ircv3          ; list users in the "#ircv3" channel
+Reply Examples:
+
+  :calcium.libera.chat 352 dan #ircv3 ~emersion sourcehut/staff/emersion calcium.libera.chat emersion H :1 Simon Ser
+  :calcium.libera.chat 315 dan emersion :End of WHO list
+                                  ; Reply to WHO emersion
+
+  :calcium.libera.chat 352 dan #ircv3 ~emersion sourcehut/staff/emersion calcium.libera.chat emersion H :1 Simon Ser
+  :calcium.libera.chat 352 dan #ircv3 ~val limnoria/val calcium.libera.chat val H :1 Val
+  :calcium.libera.chat 315 dan #ircv3 :End of WHO list
+                                  ; Reply to WHO #ircv3
+
+# Channel Types
+IRC has various types of channels that act in different ways. What differentiates these channels is the character the channel name starts with. For instance, channels starting with # are regular channels, and channels starting with & are local channels.
+
+Upon joining, clients are shown which types of channels the server supports with the CHANTYPES parameter.
+
+Here, we go through the different types of channels that exist and are widely-used these days.
+
+## Regular Channels (#)
+The prefix character for this type of channel is ('#', 0x23).
+
+This channel is what’s referred to as a normal channel. Clients can join this channel, and the first client who joins a normal channel is made a channel operator, along with the appropriate channel membership prefix. On most servers, newly-created channels have then protected topic "+t" and no external messages "+n" modes enabled, but exactly what modes new channels are given is up to the server.
+
+Regular channels are persisted across the network. If two clients on different servers join the same regular channel, they’ll be able to see that each other are joined, and will see messages sent to the channel by the other client.
+
+On servers that support the concept of ‘channel ownership’ (a client being able to own a channel and retain control of it with their account), clients may not receive channel operator priveledges on joining an otherwise empty channel.
+
+## Local Channels (&)
+The prefix character for this type of channel is ('&', 0x26).
+
+This channel is what’s referred to as a local channel. Clients can join this channel as normal, and the first client who joins a normal channel is made a channel operator, but the channel is not persisted across the network. In other words, each server has its own set of local channels that the other servers on the network don’t see.
+
+If a client on server A and a client on server B join the channel &info, they will not be able to see each other or the messages each posts to their server’s local channel &info. However, if a client on server A and another client on server A join the channel &info, they will be able to see each other and the messages the other posts to that local channel.
+
+Generally, the concept of channel ownership is not supported for local channels. Local channels also aren’t as widely available as regular channels. As well, some networks disable or disallow local channels as opers across the network can’t see nor administrate them.
+
+# User Modes
+## Invisible User Mode
+This mode is standard, and the mode letter used for it is "+i".
+
+If a user is set to ‘invisible’, they will not show up in commands such as WHO or NAMES unless they share a channel with the user that submitted the command. In addition, some servers hide all channels from the WHOIS reply of an invisible user they do not share with the user that submitted the command.
+
+## Registered User Mode
+This mode is widely-used, and the mode letter used for it is typically "+r". The character used for this mode, and whether it exists at all, may vary depending on server software and configuration.
+
+If a user has this mode, this indicates that they have logged into a user account.
+
+# Channel Modes
+## Ban Channel Mode
+This mode is standard, and the mode letter used for it is "+b".
+
+This channel mode controls a list of client masks that are ‘banned’ from joining or speaking in the channel. If this mode has values, each of these values should be a client mask.
+
+If this mode is set on a channel, and a client sends a JOIN request for this channel, their nickmask (the combination of nick!user@host) is compared with each banned client mask set with this mode. If they match one of these banned masks, they will receive an ERR_BANNEDFROMCHAN (474) reply and the JOIN command will fail. See the ban exception mode for more details.
+
+
+## Exception Channel Mode
+This mode is used in almost all IRC software today. The standard mode letter used for it is "+e", but it SHOULD be defined in the EXCEPTS RPL_ISUPPORT parameter on connection.
+
+This channel mode controls a list of client masks that are exempt from the ‘ban’ channel mode. If this mode has values, each of these values should be a client mask.
+
+If this mode is set on a channel, and a client sends a JOIN request for this channel, their nickmask is compared with each ‘exempted’ client mask. If their nickmask matches any one of the masks set by this mode, and their nickmask also matches any one of the masks set by the ban channel mode, they will not be blocked from joining due to the ban mode.
+
+## Client Limit Channel Mode
+This mode is standard, and the mode letter used for it is "+l".
+
+This channel mode controls whether new users may join based on the number of users who already exist in the channel. If this mode is set, its value is an integer and defines the limit of how many clients may be joined to the channel.
+
+If this mode is set on a channel, and the number of users joined to that channel matches or exceeds the value of this mode, new users cannot join that channel. If a client sends a JOIN request for this channel, they will receive an ERR_CHANNELISFULL (471) reply and the command will fail.
+
+## Invite-Only Channel Mode
+This mode is standard, and the mode letter used for it is "+i".
+
+This channel mode controls whether new users need to be invited to the channel before being able to join.
+
+If this mode is set on a channel, a user must have received an INVITE for this channel before being allowed to join it. If they have not received an invite, they will receive an ERR_INVITEONLYCHAN (473) reply and the command will fail.
+
+## Invite-Exception Channel Mode
+This mode is used in almost all IRC software today. The standard mode letter used for it is "+I", but it SHOULD be defined in the INVEX RPL_ISUPPORT parameter on connection.
+
+This channel mode controls a list of channel masks that are exempt from the invite-only channel mode. If this mode has values, each of these values should be a client mask.
+
+If this mode is set on a channel, and a client sends a JOIN request for that channel, their nickmask is compared with each ‘exempted’ client mask. If their nickmask matches any one of the masks set by this mode, and the channel is in invite-only mode, they do not need to require an INVITE in order to join the channel.
+
+## Key Channel Mode
+This mode is standard, and the mode letter used for it is "+k".
+
+This mode letter sets a ‘key’ that must be supplied in order to join this channel. If this mode is set, its’ value is the key that is required. Servers may validate the value (eg. to forbid spaces, as they make it harder to use the key in JOIN messages). If the value is invalid, they SHOULD return ERR_INVALIDMODEPARAM. However, clients MUST be able to handle any of the following:
+
+ERR_INVALIDMODEPARAM
+ERR_INVALIDKEY
+MODE echoed with a different key (eg. truncated or stripped of invalid characters)
+the key changed ignored, and no MODE echoed if no other mode change was valid.
+If this mode is set on a channel, and a client sends a JOIN request for that channel, they must supply <key> in order for the command to succeed. If they do not supply a <key>, or the key they supply does not match the value of this mode, they will receive an ERR_BADCHANNELKEY (475) reply and the command will fail.
+
+## Moderated Channel Mode
+This mode is standard, and the mode letter used for it is "+m".
+
+This channel mode controls whether users may freely talk on the channel, and does not have any value.
+
+If this mode is set on a channel, only users who have channel privileges may send messages to that channel. The voice channel mode is designed to let a user talk in a moderated channel without giving them other channel moderation abilities, and users of higher privileges (such as halfops or chanops) may also speak in moderated channels.
+
+## Secret Channel Mode
+This mode is standard, and the mode letter used for it is "+s".
+
+This channel mode controls whether the channel is ‘secret’, and does not have any value.
+
+A channel that is set to secret will not show up in responses to the LIST or NAMES command unless the client sending the command is joined to the channel. Likewise, secret channels will not show up in the RPL_WHOISCHANNELS (319) numeric unless the user the numeric is being sent to is joined to that channel.
+
+## Protected Topic Mode
+This mode is standard, and the mode letter used for it is "+t".
+
+This channel mode controls whether channel privileges are required to set the topic, and does not have any value.
+
+If this mode is enabled, users must have channel privileges such as halfop or operator status in order to change the topic of a channel. In a channel that does not have this mode enabled, anyone may set the topic of the channel using the TOPIC command.
+
+## No External Messages Mode
+This mode is standard, and the mode letter used for it is "+n".
+
+This channel mode controls whether users who are not joined to the channel can send messages to it, and does not have any value.
+
+If this mode is enabled, users MUST be joined to the channel in order to send private messages and notices to the channel. If this mode is enabled and they try to send one of these to a channel they are not joined to, they will receive an ERR_CANNOTSENDTOCHAN (404) numeric and the message will not be sent to that channel.
+
+# Channel Membership Prefixes
+Users joined to a channel may get certain privileges or status in that channel based on channel modes given to them. These users are given prefixes before their nickname whenever it is associated with a channel (ie, in NAMES, WHO and WHOIS messages). The standard and common prefixes are listed here, and MUST be advertised by the server in the PREFIX RPL_ISUPPORT parameter on connection.
+
+## Founder Prefix
+This mode is used in a large number of networks. The prefix and mode letter typically used for it, respectively, are "~" and "+q".
+
+This prefix shows that the given user is the ‘founder’ of the current channel and has full moderation control over it – ie, they are considered to ‘own’ that channel by the network. This prefix is typically only used on networks that have the concept of client accounts, and ownership of channels by those accounts.
+
+## Protected Prefix
+This mode is used in a large number of networks. The prefix and mode letter typically used for it, respectively, are "&" and "+a".
+
+Users with this mode cannot be kicked and cannot have this mode removed by other protected users. In some software, they may perform actions that operators can, but at a higher privilege level than operators. This prefix is typically only used on networks that have the concept of client accounts, and ownership of channels by those accounts.
+
+## Operator Prefix
+This mode is standard. The prefix and mode letter used for it, respectively, are "@" and "+o".
+
+Users with this mode may perform channel moderation tasks such as kicking users, applying channel modes, and set other users to operator (or lower) status.
+
+## Halfop Prefix
+This mode is widely used in networks today. The prefix and mode letter used for it, respectively, are "%" and "+h".
+
+Users with this mode may perform channel moderation tasks, but at a lower privilege level than operators. Which channel moderation tasks they can and cannot perform varies with server software and configuration.
+
+## Voice Prefix
+This mode is standard. The prefix and mode letter used for it, respectively, are "+" and "+v".
+
+Users with this mode may send messages to a channel that is moderated.
+
+[RPL_](https://modern.ircdocs.horse/#numerics)
