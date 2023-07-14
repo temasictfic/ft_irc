@@ -29,13 +29,12 @@ Channel operators (or “chanops”) on a given channel are considered to ‘run
 IRC servers may also define other levels of channel moderation. These can include ‘halfop’ (half operator), ‘protected’ (protected user/operator), ‘founder’ (channel founder), and any other positions the server wishes to define. These moderation levels have varying privileges and can execute, and not execute, various channel management commands based on what the server defines.
 
 The commands which may only be used by channel moderators include:
->
-KICK: Eject a client from the channel
-MODE: Change the channel’s modes
-INVITE: Invite a client to an invite-only channel (mode +i)
-TOPIC: Change the channel topic in a mode +t channel
+
+> KICK: Eject a client from the channel
+> MODE: Change the channel’s modes
+> INVITE: Invite a client to an invite-only channel (mode +i)
+> TOPIC: Change the channel topic in a mode +t channel
 Channel moderators are identified by the channel member prefix ('@' for standard channel operators, '%' for halfops) next to their nickname whenever it is associated with a channel (e.g. replies to the NAMES, WHO, and WHOIS commands).
->
 
 Specific prefixes and moderation levels are covered in the Channel Membership Prefixes section.
 
@@ -56,9 +55,9 @@ When reading messages from a stream, read the incoming data into a buffer. Only 
 When sending messages, ensure that a pair of \r\n characters follows every single message your software sends out.
 
 # Source
-  source          ::=  <servername> / ( <nickname> [ "!" <user> ] [ "@" <host> ] )
-  nick            ::=  <any characters except NUL, CR, LF, chantype character, and SPACE> <possibly empty sequence of any characters except NUL, CR, LF, and SPACE>
-  user            ::=  <sequence of any characters except NUL, CR, LF, and SPACE>
+  > source          ::=  <servername> / ( <nickname> [ "!" <user> ] [ "@" <host> ] )
+  > nick            ::=  <any characters except NUL, CR, LF, chantype character, and SPACE> <possibly empty sequence of any characters except NUL, CR, LF, and SPACE>
+  > user            ::=  <sequence of any characters except NUL, CR, LF, and SPACE>
 The source (formerly known as prefix) is optional and starts with a (':', 0x3A) character (which is stripped from the value), and if there are no tags it MUST be the first character of the message itself.
 
 The source indicates the true origin of a message. If the source is missing from a message, it’s is assumed to have originated from the client/server on the other end of the connection the message was received on.
@@ -68,7 +67,7 @@ Clients MUST NOT include a source when sending a message.
 Servers MAY include a source on any message, and MAY leave a source off of any message. Clients MUST be able to process any given message the same way whether it contains a source or does not contain one.
 
 # Command
-  command         ::=  letter* / 3digit
+  > command         ::=  letter* / 3digit
 The command must either be a valid IRC command or a numeric (a three-digit number represented as text).
 
 Information on specific commands / numerics can be found in the Client Messages and Numerics sections, respectively.
@@ -76,10 +75,10 @@ Information on specific commands / numerics can be found in the Client Messages 
 # Parameters
 This is the format of the parameters part:
 
-  parameter       ::=  *( SPACE middle ) [ SPACE ":" trailing ]
-  nospcrlfcl      ::=  <sequence of any characters except NUL, CR, LF, colon (`:`) and SPACE>
-  middle          ::=  nospcrlfcl *( ":" / nospcrlfcl )
-  trailing        ::=  *( ":" / " " / nospcrlfcl )
+  > parameter       ::=  *( SPACE middle ) [ SPACE ":" trailing ]
+  > nospcrlfcl      ::=  <sequence of any characters except NUL, CR, LF, colon (`:`) and SPACE>
+  > middle          ::=  nospcrlfcl *( ":" / nospcrlfcl )
+  > trailing        ::=  *( ":" / " " / nospcrlfcl )
 Parameters (or ‘params’) are extra pieces of information added to the end of a message. These parameters generally make up the ‘data’ portion of the message. What specific parameters mean changes for every single message.
 
 Parameters are a series of values separated by one or more ASCII SPACE characters (' ', 0x20). However, this syntax is insufficient in two cases: a parameter that contains one or more spaces, and an empty parameter. To permit such parameters, the final parameter can be prepended with a (':', 0x3A) character, in which case that character is stripped and the rest of the message is treated as the final parameter, including any spaces it contains. Parameters that contain spaces, are empty, or begin with a ':' character MUST be sent with a preceding ':'; in other cases the use of a preceding ':' on the final parameter is OPTIONAL.
@@ -88,17 +87,17 @@ Software SHOULD AVOID sending more than 15 parameters, as older client protocol 
 
 Here are some examples of messages and how the parameters would be represented as JSON lists:
 
-  :irc.example.com CAP * LIST :         ->  ["*", "LIST", ""]
+  > :irc.example.com CAP * LIST :         ->  ["*", "LIST", ""]
 
-  CAP * LS :multi-prefix sasl           ->  ["*", "LS", "multi-prefix sasl"]
+  > CAP * LS :multi-prefix sasl           ->  ["*", "LS", "multi-prefix sasl"]
 
-  CAP REQ :sasl message-tags foo        ->  ["REQ", "sasl message-tags foo"]
+  > CAP REQ :sasl message-tags foo        ->  ["REQ", "sasl message-tags foo"]
 
-  :dan!d@localhost PRIVMSG #chan :Hey!  ->  ["#chan", "Hey!"]
+  > :dan!d@localhost PRIVMSG #chan :Hey!  ->  ["#chan", "Hey!"]
 
-  :dan!d@localhost PRIVMSG #chan Hey!   ->  ["#chan", "Hey!"]
+  > :dan!d@localhost PRIVMSG #chan Hey!   ->  ["#chan", "Hey!"]
 
-  :dan!d@localhost PRIVMSG #chan ::-)   ->  ["#chan", ":-)"]
+  > :dan!d@localhost PRIVMSG #chan ::-)   ->  ["#chan", ":-)"]
 As these examples show, a trailing parameter (a final parameter with a preceding ':') has the same semantics as any other parameter, and MUST NOT be treated specially or stored separately once the ':' is stripped.
 
 # Compatibility with incorrect software
@@ -125,12 +124,12 @@ Until registration is complete, only a limited subset of commands SHOULD be acce
 
 The recommended order of commands during registration is as follows:
 
-CAP LS 302
-PASS
-NICK and USER
-Capability Negotiation
-SASL (if negotiated)
-CAP END
+> CAP LS 302
+> PASS
+> NICK and USER
+> Capability Negotiation
+> SASL (if negotiated)
+> CAP END
 The commands specified in steps 1-3 should be sent on connection. If the server supports capability negotiation then registration will be suspended and the client can negotiate client capabilities (steps 4-6). If the server does not support capability negotiation then registration will continue immediately without steps 4-6.
 
 If the server supports capability negotiation, the CAP command suspends the registration process and immediately starts the capability negotiation process. CAP LS 302 means that the client supports version 302 of client capability negotiation. The registration process is resumed when the client sends CAP END to the server.
@@ -184,12 +183,12 @@ Servers may also consider requiring SASL authentication upon connection as an al
 
 Numeric replies:
 
-ERR_NEEDMOREPARAMS (461)
-ERR_ALREADYREGISTERED (462)
-ERR_PASSWDMISMATCH (464)
+> ERR_NEEDMOREPARAMS (461)
+> ERR_ALREADYREGISTERED (462)
+> ERR_PASSWDMISMATCH (464)
 Command Example:
 
-  PASS secretpasswordhere
+  > PASS secretpasswordhere
 
 ## NICK message
      Command: NICK
@@ -200,27 +199,27 @@ If the server receives a NICK command from a client where the desired nickname i
 
 If the server does not accept the new nickname supplied by the client as valid (for instance, due to containing invalid characters), it should issue an ERR_ERRONEUSNICKNAME numeric and ignore the NICK command. Servers MUST allow at least all alphanumerical characters, square and curly brackets ([]{}), backslashes (\), and pipe (|) characters in nicknames, and MAY disallow digits as the first character. Servers MAY allow extra characters, as long as they do not introduce ambiguity in other commands, including:
 
-no leading # character or other character advertized in CHANTYPES
-no leading colon (:)
-no ASCII space
+> no leading # character or other character advertized in CHANTYPES
+> no leading colon (:)
+> no ASCII space
 If the server does not receive the <nickname> parameter with the NICK command, it should issue an ERR_NONICKNAMEGIVEN numeric and ignore the NICK command.
 
 The NICK message may be sent from the server to clients to acknowledge their NICK command was successful, and to inform other clients about the change of nickname. In these cases, the <source> of the message will be the old nickname [ [ "!" user ] "@" host ] of the user who is changing their nickname.
 
 Numeric Replies:
 
-ERR_NONICKNAMEGIVEN (431)
-ERR_ERRONEUSNICKNAME (432)
-ERR_NICKNAMEINUSE (433)
-ERR_NICKCOLLISION (436)
+> ERR_NONICKNAMEGIVEN (431)
+> ERR_ERRONEUSNICKNAME (432)
+> ERR_NICKNAMEINUSE (433)
+> ERR_NICKCOLLISION (436)
 Command Example:
 
-  NICK Wiz                  ; Requesting the new nick "Wiz".
+  > NICK Wiz                  ; Requesting the new nick "Wiz".
 Message Examples:
 
-  :WiZ NICK Kilroy          ; WiZ changed his nickname to Kilroy.
+  > :WiZ NICK Kilroy          ; WiZ changed his nickname to Kilroy.
 
-  :dan-!d@localhost NICK Mamoped
+  > :dan-!d@localhost NICK Mamoped
                             ; dan- changed his nickname to Mamoped.
 
 ## USER message
@@ -244,20 +243,20 @@ If the client sends a USER command after the server has successfully received a 
 
 Numeric Replies:
 
-ERR_NEEDMOREPARAMS (461)
-ERR_ALREADYREGISTERED (462)
+> ERR_NEEDMOREPARAMS (461)
+> ERR_ALREADYREGISTERED (462)
 Command Examples:
 
-  USER guest 0 * :Ronnie Reagan
-                              ; No ident server
-                              ; User gets registered with username
-                              "~guest" and real name "Ronnie Reagan"
+  > USER guest 0 * :Ronnie Reagan
+                              > ; No ident server
+                              > ; User gets registered with username
+                              > "~guest" and real name "Ronnie Reagan"
 
-  USER guest 0 * :Ronnie Reagan
-                              ; Ident server gets contacted and
-                              returns the name "danp"
-                              ; User gets registered with username
-                              "danp" and real name "Ronnie Reagan"
+  > USER guest 0 * :Ronnie Reagan
+                              > ; Ident server gets contacted and
+                              > returns the name "danp"
+                              > ; User gets registered with username
+                              > "danp" and real name "Ronnie Reagan"
 
 ## PING message
      Command: PING
