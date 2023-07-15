@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-enum class RegistrationState {
+enum RegistrationState {
     None,
     PassRegistered,
     UserRegistered,
@@ -51,4 +51,5 @@ public:
     bool IsExistChannel(const std::string &ChannelName);
     bool NickLetterControl(const std::string &Nick);
     bool NickPrefixControl(const std::string &Nick);
+    bool isBannedClient(const std::string &ChannelName);
 };

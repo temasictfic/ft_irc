@@ -27,6 +27,9 @@ public:
     
     std::string getKey() const;
     void setKey(const std::string &key);
+
+    std::vector<class Client> &getBanned();
+    std::vector<class Client> getMembers() const;
     
     unsigned int getClientLimit() const;
     void setClientLimit(const unsigned int &clientLimit);
@@ -34,7 +37,7 @@ public:
     //gerekirse vectorlere add ve remove uye fonksiyonlari yaz
 
 
-    Channel(/* args */);
+    Channel(std::string ChannelName);
     ~Channel();
 };
 

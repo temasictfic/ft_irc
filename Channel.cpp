@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include "Client.hpp"
 
 Channel::Channel()
 {
@@ -39,4 +40,13 @@ unsigned int Channel::getClientLimit() const
 void Channel::setClientLimit(const unsigned int &clientLimit)
 {
      _clientLimit = clientLimit;
+}
+
+std::vector<class Client> &Channel::getBanned()
+{
+    return _banned;
+}
+std::vector<class Client> Channel::getMembers() const
+{
+    return _members;
 }
