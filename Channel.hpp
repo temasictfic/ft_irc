@@ -21,6 +21,9 @@ private:
     std::vector<class Client> _members;
     enum Mode _mode;
 public:
+    Channel();
+    Channel(std::string ChannelName);
+    ~Channel();
 
     std::string getTopic() const;
     void setTopic(const std::string &topic);
@@ -29,16 +32,19 @@ public:
     void setKey(const std::string &key);
 
     std::vector<class Client> &getBanned();
-    std::vector<class Client> getMembers() const;
-    
-    unsigned int getClientLimit() const;
+    std::vector<class Client> &getMembers();
+
+    size_t getClientLimit() const;
     void setClientLimit(const unsigned int &clientLimit);
 
+    void addMembers(class Client &Obj);
+    void removeMembers(class Client &Obj);
+
+    void addBanned(class Client &Obj);
+    void removeBanned(class Client &Obj);
     //gerekirse vectorlere add ve remove uye fonksiyonlari yaz
 
 
-    Channel(std::string ChannelName);
-    ~Channel();
 };
 
 

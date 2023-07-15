@@ -97,23 +97,31 @@ void Client::Join(const std::string &ChannelName)
 {
     if (IsExistChannel(ChannelName) )
     {
-        if(IsInChannel(ChannelName, this))
+        if(IsInChannel(ChannelName))
         {
             //print client already in channel msg;
         }
 
-        else if(isBannedClient(ChannelName))
+        else if(IsBannedClient(ChannelName))
         {
             //print client cannot join bcs in banned list of channel msg;
         }
+        else if(IsChannelLimitFull(ChannelName))
+        {
+            //Channel is full print error
+        }
+        else if (HasChannelKey(ChannelName))
+        {
+            //if has key key error
+        }
         else
         {
-            _channels[ChannelName].addMember(*this);
+            _channels[ChannelName].addMembers(*this);
         }
     }
     else
     {
-        if (InvalidChannelName(ChannelName))
+        if(IsValidChannelName(ChannelName))
         {
             //print invalid ChannelName error
         }
@@ -127,6 +135,43 @@ void Client::Join(const std::string &ChannelName)
 }
 void Client::Join(const std::string &ChannelName, const std::string &ChannelKey)
 {
+    if (IsExistChannel(ChannelName) )
+    {
+        if(IsInChannel(ChannelName))
+        {
+            //print client already in channel msg;
+        }
+
+        else if(IsBannedClient(ChannelName))
+        {
+            //print client cannot join bcs in banned list of channel msg;
+        }
+        else if(IsChannelLimitFull(ChannelName))
+        {
+            //Channel is full
+        }
+        else if (IsKeyWrong(ChannelName, ChannelKey))
+        {
+            //if key wrong print error
+        }
+        else
+        {
+            _channels[ChannelName].addMembers(*this);
+        }
+    }
+    else
+    {
+        if(IsValidChannelName(ChannelName))
+        {
+            //print invalid ChannelName error
+        }
+        else
+        {
+            Channel newish(ChannelName);
+            _channels.insert(std::pair<std::string, Channel>(ChannelName, newish));
+            _channels[ChannelName].setKey(ChannelKey);
+        }
+    }
 
 }
 void Client::Part(const std::string &ChannelName, const std::string &Reason)
@@ -135,7 +180,7 @@ void Client::Part(const std::string &ChannelName, const std::string &Reason)
 }
 void Client::Topic(const std::string &ChannelName, const std::string &TopicName)
 {
-    if(isExistChannel(ChannelName))
+    //if(isExistChannel(ChannelName))
 }
 void Client::Names(const std::string &ChannelName)
 {
@@ -166,7 +211,7 @@ void Client::List(const std::string &ChannelName)
 
 }
 
-bool InvalidPassword(const std::string &Password)
+bool Client::InvalidPassword(const std::string &Password)
 {
     if (Password.size() < 4 && Password.size() > 8)
     {
@@ -184,7 +229,7 @@ bool InvalidPassword(const std::string &Password)
     return false;
 }
 
-bool InvalidLetter(const std::string &Nick)
+bool Client::InvalidLetter(const std::string &Nick)
 {
     std::string forbid = " .,*?!@";
     for (size_t i = 0; i < 4; i++)
@@ -195,7 +240,7 @@ bool InvalidLetter(const std::string &Nick)
     return false;
     
 }
-bool InvalidPrefix(const std::string &Nick)
+bool Client::InvalidPrefix(const std::string &Nick)
 {
     std::string prefixforbid = "$:#&/";
     for(int i = 0; i < 4 ; i++)
@@ -206,7 +251,7 @@ bool InvalidPrefix(const std::string &Nick)
     return false;
 }
 
-bool Client::isBannedClient(const std::string &ChannelName)
+bool Client::IsBannedClient(const std::string &ChannelName)
 {
     std::vector<Client> &BannedVec = _channels[ChannelName].getBanned();
     for(std::vector<Client>::iterator it = BannedVec.begin();  it != BannedVec.end(); it++)
@@ -214,5 +259,49 @@ bool Client::isBannedClient(const std::string &ChannelName)
         if(it->_nick == _nick)
             return false;
     } 
+    return true;
+}
+
+bool Client::IsInChannel(const std::string &ChannelName)
+{
+    std::vector<Client> &MemberVec = _channels[ChannelName].getMembers();
+    for(std::vector<Client>::iterator it = MemberVec.begin();  it != MemberVec.end(); it++)
+    {
+        if(it->_nick == _nick)
+            return false;
+    } 
+    return true;
+}
+
+bool Client::HasChannelKey(const std::string &ChannelName)
+{
+    std::string NewKey = _channels[ChannelName].getKey();
+
+    if(NewKey[0])
+        return true;
+    return false;
+}
+
+bool Client::IsKeyWrong(const std::string &ChannelName,const std::string &Key)
+{
+    if(HasChannelKey(ChannelName))
+    {
+        if(_channels[ChannelName].getKey() == Key)
+            return false;
+        return true;
+    }
+    return true;
+}
+
+bool Client::IsChannelLimitFull(const std::string &ChannelName)
+{
+    size_t i = 0;
+    std::vector<Client> &ClientVec = _channels[ChannelName].getMembers();
+    for(std::vector<Client>::iterator it = ClientVec.begin(); it != ClientVec.end(); it++)
+    {
+        i++;
+    }
+    if(_channels[ChannelName].getClientLimit() > i)
+        return false;
     return true;
 }

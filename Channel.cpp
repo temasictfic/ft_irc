@@ -1,16 +1,18 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 
-Channel::Channel()
+ Channel::Channel()
+ {
+
+ }
+Channel::Channel(std::string ChannelName)
 {
 
 }
-
 Channel::~Channel()
 {
 
 }
-
 
 std::string Channel::getTopic() const
 {
@@ -32,7 +34,7 @@ void Channel::setKey(const std::string &key)
     _key = key;
 }
     
-unsigned int Channel::getClientLimit() const
+size_t Channel::getClientLimit() const
 {
     return _clientLimit;
 }
@@ -46,7 +48,13 @@ std::vector<class Client> &Channel::getBanned()
 {
     return _banned;
 }
-std::vector<class Client> Channel::getMembers() const
+std::vector<class Client> &Channel::getMembers() 
 {
     return _members;
+}
+
+
+void Channel::addMembers(Client &Obj)
+{
+   _members.push_back(Obj);
 }

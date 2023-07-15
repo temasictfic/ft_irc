@@ -49,7 +49,12 @@ public:
     //Controls
     bool IsExistClient(const std::string &ClientName, const int val);
     bool IsExistChannel(const std::string &ChannelName);
-    bool NickLetterControl(const std::string &Nick);
-    bool NickPrefixControl(const std::string &Nick);
-    bool isBannedClient(const std::string &ChannelName);
+    bool InvalidPassword(const std::string &Password);
+    bool InvalidLetter(const std::string &Nick);
+    bool InvalidPrefix(const std::string &Nick);
+    bool IsBannedClient(const std::string &ChannelName);
+    bool IsInChannel(const std::string &ChannelName);
+    bool HasChannelKey(const std::string &ChannelName);
+    bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
+    bool IsChannelLimitFull(const std::string &ChannelName);
 };
