@@ -46,6 +46,12 @@ public:
     void List();
     void List(const std::string &ChannelName);
 
+    void ChangeMode(enum Mode &mode, const std::string &ModeString);
+
+    //getter setter
+    const std::string& getNick() const;
+    const std::vector<Client> &getClients() const; 
+
     //Controls
     bool IsExistClient(const std::string &ClientName, const int val);
     bool IsExistChannel(const std::string &ChannelName);
@@ -57,4 +63,5 @@ public:
     bool HasChannelKey(const std::string &ChannelName);
     bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
     bool IsChannelLimitFull(const std::string &ChannelName);
+    Client &findClientNick(const std::string &NickName);
 };

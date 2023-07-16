@@ -3,39 +3,42 @@
 #include <vector>
 enum Mode  
 {
-    InviteOnly,
-    KeyChannel,
-    Secret,
-    ProtectedTopic,
-    NoexternalMessage,
+    Default = 0,
+    InviteOnly = 1,
+    KeyChannel = 2,
+    ProtectedTopic = 4
 };
 
 class Channel
 {
 private:
-    class Client * _operator;
-    std::string _topic;
+    class Client *_operator;
     std::string _key;
-    unsigned int _clientLimit;
     std::vector<class Client> _banned;
     std::vector<class Client> _members;
-    enum Mode _mode;
 public:
+    enum Mode _mode;
+    std::string _topic;
+    unsigned int _clientLimit;
+    
     Channel();
     Channel(std::string ChannelName);
     ~Channel();
 
-    std::string getTopic() const;
+    const std::string &getTopic() const;
     void setTopic(const std::string &topic);
     
-    std::string getKey() const;
+    const std::string &getKey() const;
     void setKey(const std::string &key);
 
     std::vector<class Client> &getBanned();
     std::vector<class Client> &getMembers();
 
-    size_t getClientLimit() const;
+    const size_t getClientLimit() const;
     void setClientLimit(const unsigned int &clientLimit);
+
+    class Client  *getOperator() const;
+    void setOperator(class Client *Obj);
 
     void addMembers(class Client &Obj);
     void removeMembers(class Client &Obj);
