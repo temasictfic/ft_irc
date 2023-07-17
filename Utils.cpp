@@ -44,6 +44,8 @@ bool InvalidPassword(const std::string &Password)
 
 bool InvalidLetter(const std::string &Nick)
 {
+    if(Nick.empty())
+        return false;
     std::string forbid = " .,*?!@";
     for (size_t i = 0; i < 4; i++)
     {
@@ -54,6 +56,8 @@ bool InvalidLetter(const std::string &Nick)
 }
 bool InvalidPrefix(const std::string &Nick)
 {
+    if(Nick.empty())
+        return false;
     std::string prefixforbid = "$:#&/";
     for (int i = 0; i < 4; i++)
     {

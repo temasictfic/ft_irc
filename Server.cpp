@@ -12,7 +12,8 @@ void Server::processCommand(const std::string &command, std::pair<const std::str
 {
     if (client._status == RegistrationState::UsernameRegistered)
     {
-        switch (cmds[command])
+        
+       /* switch (cmds[command])
         {
         case 0:
             Pass(client, params.first);
@@ -62,7 +63,7 @@ void Server::processCommand(const std::string &command, std::pair<const std::str
             else
                 List(params.first);
             break;
-        }
+        }*/
     }
     else
     {
@@ -179,13 +180,14 @@ void Server::Run()
                     std::string params = message.substr(spacePos + 1);
 
                     // Process the IRC command
-                    processCommand(command, params, *it);
+                    if (_cmds.find(arguments[0]) != _cmds.end())
+			            _cmds[toUpper(arguments[0])])(*it, params);
+                    else
+                         processChatMessage(message, *it);
                 }
                 else
-                {
                     // Regular chat message
                     processChatMessage(message, *it);
-                }
             }
         }
     }
@@ -246,246 +248,206 @@ Server::Server(const std::string &Port, const std::string &Password)
     }
     else
         _password = Password;
+
+     if(Deneme.ReadySocketandPort())
+        return ;
+
+    _cmds["/PASS"] = &Server::Pass;
+    _cmds["/NICK"] = &Server::Nick;
+    _cmds["/USER"] = &Server::User;
+    _cmds["/PING"] = &Server::Ping;
+    _cmds["/QUIT"] = &Server::Quit;
+    _cmds["/JOIN"] = &Server:Join;
+    _cmds["/PART"] = &Server::Part;
+    _cmds["/TOPIC"] = &Server:Topic;
+    _cmds["/NAMES"] = &Server::Names;
+    _cmds["/INVITE"] = &Server::Invite;
+    _cmds["/MODE"] = &Server::Mode;
+    _cmds["/NOTICE"] = &Server::Notice;
+    _cmds["/PRIVMSG"] = &Server::PrivMsg;
+    _cmds["/LIST"] = &Server::List;
 }
 
 Server::~Server()
 {
 }
-
-void Server::Pass(Client &obj, const std::string &Password)
+void Server::Pass(Client &obj, std::vector<std::string> Svec)
 {
-    if (!InvalidPassword(Password))
+    if(!InvalidPassword(Svec[0]))
     {
-        switch (obj._status) // _status
+     switch (obj._status) // _status
         {
-case RegistrationState::None:
-            obj.setPassword(Password);
+        case RegistrationState::None:
+            obj.setPassword(Svec[0]);
             obj._status = RegistrationState::PassRegistered;
             // password assigned yazdır?;
             break;
-case RegistrationState::UsernameRegistered:
-            obj.setPassword(Password);
+        case RegistrationState::UsernameRegistered:
+            obj.setPassword(Svec[0]);
             // password changed yazdır?;
             break;
         }
     }
-    // Invalid Password hatası
 }
-void Server::Nick(Client &obj, const std::string &NickName)
+void Server::Nick(Client &obj, std::vector<std::string> SVec)
 {
-    if (InvalidLetter(NickName) || InvalidPrefix(NickName))
+    if (InvalidLetter(Svec[0]) || InvalidPrefix(Svec[0]))
         // hata durumu;
         ;
-    else if (IsExistClient(NickName, 0))
+    else if (IsExistClient(Svec[0], 0))
         // hata durumu
         ;
     switch (obj._status) // _status
     {
     case RegistrationState::PassRegistered:
-        obj._nick = ToLowercase(NickName);
+        obj._nick = ToLowercase(Svec[0]);
         obj._status = RegistrationState::NickRegistered;
         // nick assigned yazdır?;
         break;
     default:
-        obj._nick = ToLowercase(NickName);
+        obj._nick = ToLowercase(Svec[0]);
         // nick changed yazdır?;
         break;
     }
 }
 
-void Server::User(Client &obj, const std::string &Username)
+void Server::User(Client &obj, std::vector<std::string> Svec)
 {
-    if (InvalidLetter(Username) || InvalidPrefix(Username))
+    if (InvalidLetter(Svec[0]) || InvalidPrefix(Svec[0]) || InvalidLetter(Svec[1]) || InvalidPrefix(Svec[1]))
         // hata durumu;
         ;
     switch (obj._status) // _status
     {
     case RegistrationState::NickRegistered:
-        obj._username = ToLowercase(Username);
-        obj._realname = "";
+        obj._username = ToLowercase(Svec[0]);
+        if(Svec.size() > 1)
+            obj._realname = Svec[1];
         obj._status = RegistrationState::UsernameRegistered;
         // username assigned yazdır?;
         break;
     case RegistrationState::UsernameRegistered:
-        obj._username = ToLowercase(Username);
-        // username changed yazdır?;
-        break;
-    }
-}
-
-void Server::User(Client &obj, const std::string &Username, const std::string &Realname)
-{
-    if (InvalidLetter(Username) || InvalidPrefix(Username) || InvalidLetter(Realname) || InvalidPrefix(Realname))
-        // hata durumu;
-        ;
-    switch (obj._status) // _status
-    {
-    case RegistrationState::NickRegistered:
-        obj._username = Username;
-        obj._realname = Realname;
-        obj._status = RegistrationState::UsernameRegistered;
-        // username assigned yazdır?;
-        break;
-    case RegistrationState::UsernameRegistered:
-        obj._username = Username;
-        obj._realname = Realname;
+        obj._username = ToLowercase(Svec[0]);
+        if(Svec.size() > 1)
+            obj._realname = Svec[1];
         // username and realname changed yazdır?;
         break;
     }
 }
 
-void Server::Ping(Client &obj)
+void Server::Ping(Client &obj, std::vector<std::string>)
 {
     sendMessageToClient(obj, "Ping");
 }
-void Server::Quit(Client &obj, const std::string &Message)
+void Server::Quit(Client &obj, std::vector<std::string> Svec)
 {
     // print client nickname quited msg
     // remove client all the members list of channels joined
     // remove from clients.
     close(obj.getSocketFd());
 }
-void Server::Join(Client &obj, const std::string &ChannelName)
+void Server::Join(Client &obj,std::vector<std::string> Svec)
 {
-    if (IsExistChannel(ChannelName))
+    if (IsExistChannel(Svec[0]))
     {
-        if (IsInChannel(obj, ChannelName))
+        if (IsInChannel(obj, Svec[0]))
         {
             // print client already in channel msg;
         }
 
-        else if (IsBannedClient(obj, ChannelName))
+        else if (IsBannedClient(obj, Svec[0]))
         {
             // print client cannot join bcs in banned list of channel msg;
         }
-        else if (IsChannelLimitFull(ChannelName))
-        {
-            // Channel is full print error
-        }
-        else if (HasChannelKey(ChannelName))
-        {
-            // if has key key error
-        }
-        else
-        {
-            _channels[ChannelName].addMembers(obj);
-        }
-    }
-    else
-    {
-        if (InvalidLetter(ChannelName) || InvalidPrefix(ChannelName))
-        {
-            // print invalid ChannelName error
-        }
-        else
-        {
-            Channel newish(ChannelName);
-            _channels.insert(std::pair<std::string, Channel>(ChannelName, newish));
-        }
-    }
-}
-void Server::Join(Client &obj, const std::string &ChannelName, const std::string &ChannelKey)
-{
-    if (IsExistChannel(ChannelName))
-    {
-        if (IsInChannel(obj, ChannelName))
-        {
-            // print client already in channel msg;
-        }
-
-        else if (IsBannedClient(obj, ChannelName))
-        {
-            // print client cannot join bcs in banned list of channel msg;
-        }
-        else if (IsChannelLimitFull(ChannelName))
+        else if (IsChannelLimitFull(Svec[0]))
         {
             // Channel is full
         }
-        else if (IsKeyWrong(ChannelName, ChannelKey))
+        else if (IsKeyWrong(Svec[0], Svec[1]))
         {
             // if key wrong print error
         }
         else
         {
-            _channels[ChannelName].addMembers(obj);
+            _channels[Svec[0]].addMembers(obj);
         }
     }
     else
     {
-        if (InvalidLetter(ChannelName) || InvalidPrefix)
+        if (InvalidLetter(Svec[0]) || Svec[0][0] != '#')
         {
             // print invalid ChannelName error
         }
         else
         {
-            Channel newish(ChannelName);
-            _channels.insert(std::pair<std::string, Channel>(ChannelName, newish));
-            _channels[ChannelName].setKey(ChannelKey);
+            Channel newish(Svec[0]);
+            _channels.insert(std::pair<std::string, Channel>(Svec[0], newish));
+            if(!Svec[1].empty())
+                _channels[Svec[0]].setKey(Svec[1]);
         }
     }
 }
-void Server::Part(Client &obj, const std::string &ChannelName, const std::string &Reason)
+void Server::Part(Client &obj, std::vector<std::string> Svec)
 {
-    // print reason
-    _channels[ChannelName].removeMembers(obj);
+    // print Svec[1] as reason
+    _channels[Svec[0]].removeMembers(obj);
 }
-void Server::Topic(Client &obj, const std::string &ChannelName, const std::string &TopicName)
+void Server::Topic(Client &obj, std::vector<std::string> Svec)
 {
-    if (InvalidPrefix(TopicName) || InvalidLetter(TopicName))
+    if (InvalidPrefix(Svec[1]) || InvalidLetter(Svec[1]))
         // print error doesnt allow this letter
-        if (IsExistChannel(ChannelName) && IsInChannel(obj, ChannelName))
+        if (IsExistChannel(Svec[0]) && IsInChannel(obj, Svec[0]))
         {
-            if (_channels[ChannelName]._mode == Mode::ProtectedTopic && _channels[ChannelName].getOperator()->_nick == obj._nick)
-                _channels[ChannelName]._topic = TopicName;
-            else if (_channels[ChannelName]._mode == Mode::ProtectedTopic)
+            if (_channels[Svec[0]]._mode == Mode::ProtectedTopic && _channels[Svec[0]].getOperator()->_nick == obj._nick)
+                _channels[Svec[0]]._topic = Svec[1];
+            else if (_channels[Svec[0]]._mode == Mode::ProtectedTopic)
             {
                 // print error
             }
             else
-                _channels[ChannelName]._topic = TopicName;
+                _channels[Svec[0]]._topic = Svec[1];
             ;
         }
 }
-void Server::Names(const std::string &ChannelName)
+void Server::Names(class Client & obj,std::vector<std::string> Svec)
 {
-    if (IsExistChannel(ChannelName))
+    if (IsExistChannel(Svec[0]))
     {
-        std::cout << '@' << _channels[ChannelName].getOperator()->_nick << '\n';
-        for (std::vector<Client>::iterator it = _channels[ChannelName].getMembers().begin(); it != _channels[ChannelName].getMembers().end(); ++it)
+        std::cout << '@' << _channels[Svec[0]].getOperator()->_nick << '\n';
+        for (std::vector<Client>::iterator it = _channels[Svec[0]].getMembers().begin(); it != _channels[Svec[0]].getMembers().end(); it++)
         {
             std::cout << it->_nick << "\n";
         }
     }
 }
-void Server::Invite(Client &obj, const std::string &ChannelName, const std::string &NickName)
+void Server::Invite(Client &obj, std::vector<std::string> Svec)
 {
-    if (!IsExistClient(NickName, 0))
+    if (!IsExistClient(Svec[1], 0))
         // print error
         // check there is a man with this nick in clients
-        if (IsExistChannel(ChannelName) && IsInChannel(obj, ChannelName))
+        if (IsExistChannel(Svec[0]) && IsInChannel(obj, Svec[0]))
         {
-            if (_channels[ChannelName]._mode == Mode::InviteOnly && _channels[ChannelName].getOperator()->_nick == obj._nick)
-                _channels[ChannelName].addMembers(findClient(NickName));
-            else if (_channels[ChannelName]._mode == Mode::InviteOnly)
+            if (_channels[Svec[0]]._mode == Mode::InviteOnly && _channels[Svec[0]].getOperator()->_nick == obj._nick)
+                _channels[Svec[0]].addMembers(findClient(Svec[1]));
+            else if (_channels[Svec[0]]._mode == Mode::InviteOnly)
             {
                 // print error
             }
             else
-                _channels[ChannelName].addMembers(findClient(NickName));
+                _channels[Svec[0]].addMembers(findClient(Svec[1]));
         }
 }
-void Server::Mode(Client &obj, const std::string &ChannelName, const std::string &ModeString)
+void Server::Mode(Client &obj, std::vector<std::string> Svec)
 {
-    if (IsExistChannel(ChannelName) && _channels[ChannelName].getOperator()->_nick == obj._nick)
+    if (IsExistChannel(Svec[0]) && _channels[Svec[0]].getOperator()->_nick == obj._nick)
     {
-        if (ModeString.size() == 2)
+        if (Svec[1].size() == 2)
         {
-            ChangeMode(_channels[ChannelName]._mode, ModeString);
+            ChangeMode(_channels[Svec[0]]._mode, Svec[1]);
         }
         else
             ; // print mode char error
     }
-    else if (IsExistChannel(ChannelName))
+    else if (IsExistChannel(Svec[0]))
     {
         ; // print not operator msg.
     }
@@ -493,32 +455,34 @@ void Server::Mode(Client &obj, const std::string &ChannelName, const std::string
         ; // print channel does not exist msg.
 }
 
-void Server::Notice(const std::string &ChannelName, const std::string &TargetNick)
+void Server::Notice(class Client &, std::vector<std::string>)
 {
 }
-void Server::PrivMsg(const std::string &NickName, const std::string &Message)
+void Server::PrivMsg(class Client &obj, std::vector<std::string> Svec)
 {
-    if (IsExistChannel(NickName))
+    if (IsExistChannel(Svec[0]))
     {
         //_channels[NickName].getOperator()->sendmessage(Message);
     }
-    else if (IsExistClient(NickName, 0))
+    else if (IsExistClient(Svec[0], 0))
     {
         // findClient(NickName).sendmessage(Message);
     }
 }
-void Server::List()
+
+void Server::List(class Client &, std::vector<std::string> Svec)
 {
-    for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+    if(Svec[0].empty())
     {
-        std::cout << "channelname: " << it->first << "limit: " << it->second._clientLimit << ", operator: @" << it->second.getOperator()->_nick << ", topic: " << it->second._topic << "\n";
+        for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
+        {
+            std::cout << "channelname: " << it->first << "limit: " << it->second._clientLimit << ", operator: @" << it->second.getOperator()->_nick << ", topic: " << it->second._topic << "\n";
+        }
+        return ;
     }
-}
-void Server::List(const std::string &ChannelName)
-{
-    if (IsExistChannel(ChannelName))
+    if (IsExistChannel(Svec[0]))
     {
-        std::cout << "channelname: " << ChannelName << "limit: " << _channels[ChannelName]._clientLimit << ", operator: @" << _channels[ChannelName].getOperator()->_nick << ", topic: " << _channels[ChannelName]._topic << "\n";
+        std::cout << "channelname: " << Svec[0] << "limit: " << _channels[Svec[0]]._clientLimit << ", operator: @" << _channels[Svec[0]].getOperator()->_nick << ", topic: " << _channels[Svec[0]]._topic << "\n";
     }
     else
         ; // print channel not exist

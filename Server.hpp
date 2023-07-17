@@ -8,22 +8,8 @@
 const int MAX_CLIENTS = 10; // Maximum number of clients to handle
 const int BUFFER_SIZE = 1024;
 
-std::map<std::string, int> cmds = { std::make_pair("PASS", 0),
-                                    std::make_pair("NICK", 1),
-                                    std::make_pair("USER", 2),
-                                    std::make_pair("PING", 3),
-                                    std::make_pair("QUIT", 4),
-                                    std::make_pair("JOIN", 5),
-                                    std::make_pair("PART", 6),
-                                    std::make_pair("TOPIC", 7),
-                                    std::make_pair("NAMES", 8),
-                                    std::make_pair("INVITE", 9),
-                                    std::make_pair("MODE", 10),
-                                    std::make_pair("NOTICE", 11),
-                                    std::make_pair("PRIVMSG", 12),
-                                    std::make_pair("LIST", 13)};
 
-class Server : Command
+class Server
 {
 private:
     int _serverSocketFd;
@@ -31,6 +17,7 @@ private:
     std::string _password;
     std::vector<class Client> _clients;
     std::map<std::string, class Channel> _channels;
+    std::map<std::string, void(Server::*)(Client &, std::vector<std::string>)> _cmds;
     //struct sockaddr_in  _serverAddress;
 public:
     Server(const std::string &Port, const std::string &Password);
@@ -40,23 +27,20 @@ public:
     ~Server();
 
     //Commands
-    void Pass(class Client &, const std::string &Password);
-    void Nick(class Client &, const std::string &NickName);
-    void User(class Client &, const std::string &Username);
-    void User(class Client &, const std::string &Username, const std::string &Realname);
-    void Ping(class Client &);
-    void Quit(class Client &, const std::string &Message);
-    void Join(class Client &, const std::string &ChannelName);
-    void Join(class Client &, const std::string &ChannelName, const std::string &ChannelKey);
-    void Part(class Client &, const std::string &ChannelName, const std::string &Reason);
-    void Topic(class Client &, const std::string &ChannelName, const std::string &TopicName);
-    void Names(const std::string &ChannelName);
-    void Invite(class Client &, const std::string &ChannelName,const std::string &NickName);
-    void Mode(class Client &, const std::string &ChannelName, const std::string &ModeString);
-    void Notice(const std::string &ChannelName, const std::string &TargetNick);
-    void PrivMsg(const std::string &NickName, const std::string &Message);
-    void List();
-    void List(const std::string &ChannelName);
+    void Pass(class Client &, std::vector<std::string>);
+    void Nick(class Client &, std::vector<std::string>);
+    void User(class Client &, std::vector<std::string>);
+    void Ping(class Client &, std::vector<std::string>);
+    void Quit(class Client &,   std::vector<std::string>);
+    void Join(class Client &, std::vector<std::string>)
+    void Part(class Client &, std::vector<std::string>);
+    void Topic(class Client &,std::vector<std::string>);
+    void Names(class Client &,std::vector<std::string>);
+    void Invite(class Client &, std::vector<std::string>);
+    void Mode(class Client &, std::vector<std::string>);
+    void Notice(class Client &, std::vector<std::string>);
+    void PrivMsg(class Client &, std::vector<std::string>);
+    void List(class Client &, std::vector<std::string>);
 
 
     //Controls

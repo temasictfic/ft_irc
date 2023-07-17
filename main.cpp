@@ -20,9 +20,6 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage: ./ircserv <port> <password>\n";
         return 1;
     }
-    //
 
     Server Deneme(argv[1],argv[2]);
-    if(Deneme.ReadySocketandPort())
-        return 1;
 }
