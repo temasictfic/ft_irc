@@ -87,6 +87,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage: ./ircserv <port> <password>\n";
         return 1;
     }
+    //
 
     int port = std::atoi(argv[1]);
     const char* password = argv[2];

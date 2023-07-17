@@ -25,7 +25,7 @@ public:
     bool _isOperator;
     enum RegistrationState _status;
 
-    Client(/* args */);
+    Client(int clientSocket);
     ~Client();
 
     void ChangeMode(enum Mode &mode, const std::string &ModeString);
