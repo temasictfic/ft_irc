@@ -15,17 +15,7 @@ Channel::~Channel()
 {
 
 }
-
-const std::string &Channel::getTopic() const
-{
-    return _topic;
-}
-
-void Channel::setTopic(const std::string &topic)
-{
-    _topic = topic;
-}
-    
+ 
 const std::string &Channel::getKey() const
 {
     return _key;
@@ -34,16 +24,6 @@ const std::string &Channel::getKey() const
 void Channel::setKey(const std::string &key)
 {
     _key = key;
-}
-    
-const size_t Channel::getClientLimit() const
-{
-    return _clientLimit;
-}
-
-void Channel::setClientLimit(const unsigned int &clientLimit)
-{
-     _clientLimit = clientLimit;
 }
 
 std::vector<class Client> &Channel::getBanned()
@@ -70,7 +50,7 @@ void Channel::removeMembers(Client &Obj)
 {
     for(std::vector<Client>::iterator it = _members.begin(); it != _members.end(); it++)
     {
-        if(it->getNick() == Obj.getNick())
+        if(it->_nick == Obj._nick)
         {
             _members.erase(it);
         }
@@ -81,7 +61,7 @@ void Channel::removeBanned(Client &Obj)
 {
         for(std::vector<Client>::iterator it = _banned.begin(); it != _banned.end(); it++)
     {
-        if(it->getNick() == Obj.getNick())
+        if(it->_nick == Obj._nick)
         {
             _members.erase(it);
         }

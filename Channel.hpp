@@ -25,17 +25,11 @@ public:
     Channel(std::string ChannelName);
     ~Channel();
 
-    const std::string &getTopic() const;
-    void setTopic(const std::string &topic);
-    
     const std::string &getKey() const;
     void setKey(const std::string &key);
 
     std::vector<class Client> &getBanned();
     std::vector<class Client> &getMembers();
-
-    const size_t getClientLimit() const;
-    void setClientLimit(const unsigned int &clientLimit);
 
     class Client  *getOperator() const;
     void setOperator(class Client *Obj);
