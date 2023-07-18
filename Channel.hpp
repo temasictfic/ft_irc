@@ -18,6 +18,7 @@ private:
     std::vector<class Client> _members;
 public:
     enum Mode _mode;
+    std::string _name;
     std::string _topic;
     unsigned int _clientLimit;
     

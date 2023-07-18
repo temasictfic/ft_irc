@@ -36,32 +36,32 @@ std::vector<class Client> &Channel::getMembers()
     return _members;
 }
 
-void Channel::addMembers(Client &Obj)
+void Channel::addMembers(Client &client)
 {
-   _members.push_back(Obj);
+   _members.push_back(client);
 }
 
-void Channel::addBanned(Client &Obj)
+void Channel::addBanned(Client &client)
 {
-    _banned.push_back(Obj);
+    _banned.push_back(client);
 }
 
-void Channel::removeMembers(Client &Obj)
+void Channel::removeMembers(Client &client)
 {
     for(std::vector<Client>::iterator it = _members.begin(); it != _members.end(); it++)
     {
-        if(it->_nick == Obj._nick)
+        if(it->_nick == client._nick)
         {
             _members.erase(it);
         }
     }
 }
 
-void Channel::removeBanned(Client &Obj)
+void Channel::removeBanned(Client &client)
 {
         for(std::vector<Client>::iterator it = _banned.begin(); it != _banned.end(); it++)
     {
-        if(it->_nick == Obj._nick)
+        if(it->_nick == client._nick)
         {
             _members.erase(it);
         }
@@ -73,7 +73,7 @@ void Channel::removeBanned(Client &Obj)
     return _operator;
  }
 
-void Channel::setOperator(Client *Obj)
+void Channel::setOperator(Client *client)
 {
-    _operator = Obj;
+    _operator = client;
 }
