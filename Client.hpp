@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include "Command.hpp"
 #include "Server.hpp"
 #include <vector>
 #include <string>
@@ -19,18 +18,22 @@ private:
     std::string _password;
 
 public:
+    size_t _idx;
     std::string _nick;
     std::string _username;
     std::string _realname;
     bool _isOperator;
+    class Channel *_channel;
     enum RegistrationState _status;
 
-    Client(int clientSocket);
+    Client(int clientSocket, size_t idx);
     ~Client();
 
     void ChangeMode(enum Mode &mode, const std::string &ModeString);
 
     //getter setter
+    class Channel *getChannel() const;
+    void setChannel(class Channel *Channel);
     void setPassword(const std::string& Password);
     const int getSocketFd() const;
 
