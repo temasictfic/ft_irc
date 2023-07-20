@@ -15,8 +15,6 @@ class Client
 {
 private:
     int _socket;
-    std::string _password;
-
 public:
     size_t _idx;
     std::string _nick;

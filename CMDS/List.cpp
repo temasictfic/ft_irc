@@ -1,9 +1,18 @@
 #include "Server.hpp"
 #include "Channel.hpp"
 #include "Client.hpp"
+#include "Replies.hpp"
+//RPL_LISTSTART (321)
+//RPL_LIST (322)
+//RPL_LISTEND (323)
 
-void Server::List(class Client &, std::vector<const std::string &> params)
+void Server::List(class Client &client, std::vector<const std::string &> params)
 {
+     if(params.size() >= 2)
+     {
+        sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/LIST")));
+        return ;
+     }
     if(params[0].empty())
     {
         for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); it++)
@@ -17,5 +26,5 @@ void Server::List(class Client &, std::vector<const std::string &> params)
         std::cout << "channelname: " << params[0] << "limit: " << _channels[params[0]]._clientLimit << ", operator: @" << _channels[params[0]].getOperator()->_nick << ", topic: " << _channels[params[0]]._topic << "\n";
     }
     else
-        ; // print channel not exist
+       sendServerToClient(client, ERR_NOSUCHCHANNEL(params[0]));
 }

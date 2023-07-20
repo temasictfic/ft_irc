@@ -72,12 +72,17 @@ public:
     void ChangeMode(enum Mode &mode, const std::string &ModeString);
     bool IsChannelLimitFull(const std::string &ChannelName);
     Client &findClient(const std::string &NickName);
+    int ParamsSizeControl(std::vector<const std::string&> params, size_t index);
+    bool PasswordMatched(const std::string& PasswordOrigin, const std::string& PasswordGiven);
 
 
     //Server.cpp
     int sendServerToClient(Client&, const std::string &message);
     int sendClientToClient(Client& sender, Client& reciever, const std::string &message);
     int sendClientToChannel(Client& sender, const std::string& ChannelName, const std::string &message);
+
+
+    const std::string& getPassword() const;
 
     class InvalidPortException : public std::exception
     {
