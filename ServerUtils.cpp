@@ -81,7 +81,7 @@ void Server::ChangeMode(enum Mode &mode, const std::string &ModeString)
 {
     if (InvalidLetter(ModeString) || InvalidPrefix(ModeString))
     {
-        std::map<char, enum Mode> modes = {std::make_pair('i', InviteOnly), std::make_pair('k', KeyChannel), std::make_pair('t', ProtectedTopic)};
+        
         if (ModeString[0] == '+')
             mode = static_cast<enum Mode>(mode | modes.at(ModeString[1]));
         else if (ModeString[0] == '-')
@@ -89,4 +89,28 @@ void Server::ChangeMode(enum Mode &mode, const std::string &ModeString)
     }
     else
         ; // print not valid
+}
+
+int Server::ParamsSizeControl(std::vector<const std::string&> params, size_t index)
+{
+    if(params.size() > index)
+        return 1;
+    else if (params.size() < index)
+        return -1;
+    for (size_t i = 0; i < index; i++)
+    {
+        if(params[i].empty())
+            return -1;
+    }
+    return 0;
+}
+
+bool Server::PasswordMatched(const std::string& PasswordOrigin, const std::string& PasswordGiven)
+{
+    return PasswordOrigin == PasswordGiven;
+}
+
+const std::string& Server::getPassword() const
+{
+    return _password;
 }

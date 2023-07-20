@@ -2,24 +2,34 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Utils.hpp"
+#include "Replies.hpp"
 
+// ERR_NEEDMOREPARAMS(Command)
+// ERR_ALREADYREGISTERED()
+// ERR_PASSWDMISMATCH()
 void Server::Pass(Client &client, std::vector<const std::string &> params)
 {
-    if(!InvalidPassword(params[0]))
+    if (int err = ParamsSizeControl(params, 1) != 0)
     {
-     switch (client._status) // _status
+        if (err == -1)
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/PASS")));
+        else if (err == 1)
+            sendServerToClient(client, ERR_CUSTOM(std::string("/PASS Excessive argument is given")));
+        return;
+    }
+    if (PasswordMatched(this->getPassword(), params[0]))
+    {
+        switch (client._status)
         {
         case RegistrationState::None:
-            client.setPassword(params[0]);
             client._status = RegistrationState::PassRegistered;
-            // password assigned yazdır?;
+            //password doğru alındı yazdırılabilinir.
             break;
-        case RegistrationState::UsernameRegistered:
-            client.setPassword(params[0]);
-            // password changed yazdır?;
+        default:
+            sendServerToClient(client, ERR_ALREADYREGISTERED());
             break;
         }
     }
-    if(client._channel && client._channel->_mode & Mode::KeyChannel)
-        client._channel->setKey(params[0]);
+    else
+        sendServerToClient(client, ERR_PASSWDMISMATCH());
 }

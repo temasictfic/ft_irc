@@ -9,6 +9,8 @@ enum Mode
     ProtectedTopic = 4
 };
 
+const std::map<char, enum Mode> modes = {{'i', InviteOnly}, {'k', KeyChannel}, {'t', ProtectedTopic}};
+
 class Channel
 {
 private:

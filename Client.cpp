@@ -12,11 +12,6 @@ Client::~Client()
     
 }
 
-void Client::setPassword(const std::string& Password)
-{
-    _password = Password;
-}
-
 const int Client::getSocketFd() const
 {
     return _socket;

@@ -189,20 +189,28 @@ bool Server::ReadySocketandPort()
 
 int Server::sendServerToClient(Client& reciever, const std::string &message)
 {
-    std::string formattedMessage = "ircserv: " + message;
-    if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1);
+    if (send(reciever.getSocketFd(), message.c_str(), message.length(), 0) == -1)
+    {
         std::cerr << "Failed to send chat message between " << "ircserv" << " -> " << reciever._nick << "\n";
+        return -1;
+    }
+    return 0;
 }
 
 int Server::sendClientToClient(Client& sender, Client& reciever, const std::string &message)
 {
     std::string formattedMessage = sender._nick + ": " + message;
-    if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1);
+    if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
+    {
         std::cerr << "Failed to send chat message between " << sender._nick << " -> " << reciever._nick << "\n";
-
+        return -1;
+    }
+    return 0;
 }
 int Server::sendClientToChannel(Client& sender, const std::string& ChannelName, const std::string &message)
 {
+    if(!sender._channel)
+        return 0;
     std::string formattedMessage = sender._nick + ": " + message;
     std::vector<Client>::iterator client = _channels.at(ChannelName).getMembers().begin();
     std::vector<Client>::iterator end = _channels.at(ChannelName).getMembers().end();
@@ -210,8 +218,12 @@ int Server::sendClientToChannel(Client& sender, const std::string& ChannelName, 
     {
         if (client->getSocketFd() != sender.getSocketFd()) 
         {
-            if (send(client->getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1);
+            if (send(client->getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
+            {
                 std::cerr << "Failed to send chat message between " << sender._nick << " -> " << client->_nick << "\n";
+                continue;
+            }
         }
     }
+    return 1;
 }

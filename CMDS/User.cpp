@@ -1,13 +1,24 @@
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Replies.hpp"
 #include "Utils.hpp"
+
+//ERR_NEEDMOREPARAMS(Command)
+//ERR_ALREADYREGISTERED()
+//RPL_WELCOME()
 
 void Server::User(Client &client, std::vector<const std::string &> params)
 {
-    if (InvalidLetter(params[0]) || InvalidPrefix(params[0]) || InvalidLetter(params[1]) || InvalidPrefix(params[1]))
-        // hata durumu;
-        ;
-    switch (client._status) // _status
+    if (int err = ParamsSizeControl(params, 1) != 0) //optional olanlar için farklı check fonksiyonu yaz.  
+    {
+        if (err == -1)
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NICK")));
+        else if (err == 1)
+            sendServerToClient(client, ERR_CUSTOM(std::string("/NICK Excessive argument is given")));
+        return;
+    }
+    // if username or realname not given nickname is used.
+    switch (client._status)
     {
     case RegistrationState::NickRegistered:
         client._username = ToLowercase(params[0]);
