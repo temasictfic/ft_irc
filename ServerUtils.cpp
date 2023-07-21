@@ -30,21 +30,20 @@ bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // c
     for (std::vector<Client>::iterator it = BannedVec.begin(); it != BannedVec.end(); it++)
     {
         if (it->_nick == client._nick)
-            return false;
+            return true;
     }
-    return true;
+    return false;
 }
 
 bool Server::IsInChannel(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
 {
-    std::vector<Client> &MemberVec = _channels.at(ChannelName).getMembers();
-    for (std::vector<Client>::iterator it = MemberVec.begin(); it != MemberVec.end(); it++)
-    {
-        if (it->_nick == client._nick)
-            return false;
-    }
-    return true;
+    return client.getChannel()->_name == ChannelName;
 }
+
+/* bool Server::IsOperator(Client &client, const std::string& Nick)
+{
+    return client._channel->getOperator()->_nick == client._nick;
+} */
 
 bool Server::HasChannelKey(const std::string &ChannelName)
 {
@@ -77,27 +76,31 @@ Client &Server::findClient(const std::string &NickName)
     }
 }
 
-void Server::ChangeMode(enum Mode &mode, const std::string &ModeString)
+bool Server::ChangeMode(enum Mode &mode, const std::string &ModeString)
 {
-    if (InvalidLetter(ModeString) || InvalidPrefix(ModeString))
+    if (!InvalidLetter(ModeString) || !InvalidPrefix(ModeString))
     {
-        
         if (ModeString[0] == '+')
+        {
             mode = static_cast<enum Mode>(mode | modes.at(ModeString[1]));
+            return true;
+        }
         else if (ModeString[0] == '-')
+        {
             mode = static_cast<enum Mode>(mode ^ modes.at(ModeString[1]));
+            return true;
+        }
     }
-    else
-        ; // print not valid
+    return false;
 }
 
-int Server::ParamsSizeControl(std::vector<const std::string&> params, size_t index)
+int Server::ParamsSizeControl(std::vector<const std::string&> params, size_t necessary, size_t optional)
 {
-    if(params.size() > index)
-        return 1;
-    else if (params.size() < index)
+    if (params.size() < necessary + optional)
         return -1;
-    for (size_t i = 0; i < index; i++)
+    else if(params.size() > necessary + optional)
+        return 1;
+    for (size_t i = 0; i < necessary + optional; i++)
     {
         if(params[i].empty())
             return -1;

@@ -1,19 +1,18 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 
-Channel::Channel()
+Channel::Channel(const std::string& ChannelName, Client& op)
 {
-
+    _name = ChannelName;
+    _topic = "";
+    _mode = Default;
+    _clientLimit = 10;
+    _key = "";
+    _operator = &op;
+    op._channel = this;
 }
-
-Channel::Channel(std::string ChannelName)
-{
-
-}
-
 Channel::~Channel()
 {
-
 }
  
 const std::string &Channel::getKey() const
@@ -38,6 +37,7 @@ std::vector<class Client> &Channel::getMembers()
 
 void Channel::addMembers(Client &client)
 {
+    client._channel = this;
    _members.push_back(client);
 }
 
@@ -55,6 +55,7 @@ void Channel::removeMembers(Client &client)
             _members.erase(it);
         }
     }
+    client._channel = nullptr;
 }
 
 void Channel::removeBanned(Client &client)

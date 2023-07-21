@@ -9,7 +9,7 @@
 // ERR_PASSWDMISMATCH()
 void Server::Pass(Client &client, std::vector<const std::string &> params)
 {
-    if (int err = ParamsSizeControl(params, 1) != 0)
+    if (int err = ParamsSizeControl(params, 1, 0) != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/PASS")));
@@ -27,7 +27,6 @@ void Server::Pass(Client &client, std::vector<const std::string &> params)
             break;
         default:
             sendServerToClient(client, ERR_ALREADYREGISTERED());
-            break;
         }
     }
     else

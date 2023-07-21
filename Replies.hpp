@@ -5,7 +5,7 @@
 #define ERR_NOSUCHCHANNEL(Channel) "ircserv " + Channel + " :No such channel. (403)\n"
 #define ERR_CANNOTSENDTOCHAN(Channel) "ircserv " + Channel + ":Cannot send to channel. (404)\n"
 #define ERR_TOOMANYCHANNELS(Channel) "ircserv " + Channel + " :You have joined too many channels. (405)\n"
-#define ERR_NORECIPIENT(Target) "ircserv :No recipient given (" + Target "). (411)\n"
+#define ERR_NORECIPIENT(Command) "ircserv :No recipient given for " + Command + " (411)\n"
 #define ERR_NOTEXTTOSEND() "ircserv :No text to send. (412)\n"
 #define ERR_INPUTTOOLONG() "ircserv :Input line was too long. (417)\n"
 #define ERR_UNKNOWNCOMMAND(Command) "ircserv " + Command + " :Unknown command. (421)\n"

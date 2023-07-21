@@ -10,7 +10,7 @@
 //ERR_NICKNAMEINUSE (Nick)
 void Server::Nick(Client &client, std::vector<const std::string &> params)
 {
-    if (int err = ParamsSizeControl(params, 1) != 0)
+    if (int err = ParamsSizeControl(params, 1, 0) != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NICK")));
@@ -26,6 +26,8 @@ void Server::Nick(Client &client, std::vector<const std::string &> params)
     {
     case RegistrationState::PassRegistered:
         client._nick = ToLowercase(params[0]);
+        client._username = ToLowercase(params[0]);
+        client._realname = ToLowercase(params[0]);
         client._status = RegistrationState::NickRegistered;
         // nick assigned yazdır?;
         break;
@@ -33,6 +35,5 @@ void Server::Nick(Client &client, std::vector<const std::string &> params)
         std::string old_nick = client._nick;
         client._nick = ToLowercase(params[0]);
         sendClientToChannel(client, client._channel->_name, old_nick + ": changed nickname to " + client._nick);
-        break;
     }
 }

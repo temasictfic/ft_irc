@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "Replies.hpp"
 #include "Utils.hpp"
 
@@ -9,29 +10,27 @@
 
 void Server::User(Client &client, std::vector<const std::string &> params)
 {
-    if (int err = ParamsSizeControl(params, 1) != 0) //optional olanlar için farklı check fonksiyonu yaz.  
+    if (int err = ParamsSizeControl(params, 1, 1) != 0)  
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NICK")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/USER")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/NICK Excessive argument is given")));
+            sendServerToClient(client, ERR_CUSTOM(std::string("/USER Excessive argument is given")));
         return;
     }
-    // if username or realname not given nickname is used.
     switch (client._status)
     {
     case RegistrationState::NickRegistered:
-        client._username = ToLowercase(params[0]);
+        client._username = params[0];
         if(params.size() > 1)
             client._realname = params[1];
         client._status = RegistrationState::UsernameRegistered;
         // username assigned yazdır?;
         break;
     case RegistrationState::UsernameRegistered:
-        client._username = ToLowercase(params[0]);
+        client._username = params[0];
         if(params.size() > 1)
             client._realname = params[1];
-        // username and realname changed yazdır?;
         break;
     }
 }

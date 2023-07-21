@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+//isbannedclient true false yerdeğiştirdim
+
 
 const int MAX_CLIENTS = 10; // Maximum number of clients to handle
 const int BUFFER_SIZE = 1024;
@@ -67,20 +69,21 @@ public:
     bool IsExistChannel(const std::string &ChannelName);
     bool IsBannedClient(class Client &, const std::string &ChannelName);
     bool IsInChannel(class Client &, const std::string &ChannelName);
+    //bool IsOperator(Client &client, const std::string& Nick);
     bool HasChannelKey(const std::string &ChannelName);
     bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
-    void ChangeMode(enum Mode &mode, const std::string &ModeString);
+    bool ChangeMode(enum Mode &mode, const std::string &ModeString);
     bool IsChannelLimitFull(const std::string &ChannelName);
     Client &findClient(const std::string &NickName);
-    int ParamsSizeControl(std::vector<const std::string&> params, size_t index);
+    int ParamsSizeControl(std::vector<const std::string&> params, size_t index, size_t optional);
     bool PasswordMatched(const std::string& PasswordOrigin, const std::string& PasswordGiven);
 
 
     //Server.cpp
     int sendServerToClient(Client&, const std::string &message);
+    int sendServerToChannel(const std::string& ChannelName, const std::string& message);
     int sendClientToClient(Client& sender, Client& reciever, const std::string &message);
     int sendClientToChannel(Client& sender, const std::string& ChannelName, const std::string &message);
-
 
     const std::string& getPassword() const;
 

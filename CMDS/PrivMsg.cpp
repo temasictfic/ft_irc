@@ -1,5 +1,7 @@
 #include "Server.hpp"
 #include "Replies.hpp"
+#include "Client.hpp"
+#include "Channel.hpp"
 
 //If <target> is a channel name and the client is banned
 //the message will not be delivered and the command will silently fail.
@@ -17,17 +19,34 @@
 
 void Server::PrivMsg(class Client &client, std::vector<const std::string &> params)
 {
-    if(ParamsSizeControl(params,1))
-     {
-         sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/PRIVMSG")));
+    if(params.size() < 2)
+    {
+        sendServerToClient(client,ERR_NOTEXTTOSEND());
         return ;
-     }
+    }
+    else if(params.empty())
+    {
+        sendServerToClient(client, ERR_NORECIPIENT(std::string("/PRIVMSG.")));
+        return ;
+    }
+    std::string message = client._nick + ":";
+    for(int index = 1; index < params.size(); index++)
+    {
+        std::string tempmessage(message);
+        message = tempmessage + " " + params[index]; 
+    }
+    if(!IsExistClient(params[0],0))
+    {
+        sendServerToClient(client,ERR_NOSUCHNICK(params[0]));
+        return ;
+    }
+    else if(params[0][0] == '#' && !IsExistChannel(params[0]))
+    {
+        sendServerToClient(client,ERR_NOSUCHCHANNEL(params[0]));
+        return ;
+    }
     if (IsExistChannel(params[0]))
-    {
-        //_channels[NickName].getOperator()->sendmessage(Message);
-    }
+        sendClientToClient(client,*_channels.at(params[0]).getOperator(),message);
     else if (IsExistClient(params[0], 0))
-    {
-        // findClient(NickName).sendmessage(Message);
-    }
+       sendClientToClient(client,findClient(params[0]),message);
 }
