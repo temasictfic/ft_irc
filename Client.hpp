@@ -20,7 +20,6 @@ public:
     std::string _nick;
     std::string _username;
     std::string _realname;
-    bool _isOperator;
     class Channel *_channel;
     enum RegistrationState _status;
 
@@ -30,9 +29,6 @@ public:
     void ChangeMode(enum Mode &mode, const std::string &ModeString);
 
     //getter setter
-    class Channel *getChannel() const;
-    void setChannel(class Channel *Channel);
-    void setPassword(const std::string& Password);
     const int getSocketFd() const;
 
 };

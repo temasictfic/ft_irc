@@ -7,17 +7,20 @@
 
 void Server::Names(class Client & client,std::vector<const std::string &> params)
 {
-    if(ParamsSizeControl(params,1))
-     {
-        sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NAMES")));
-        return ;
-     }
+    if (int err = ParamsSizeControl(params, 1, 0) != 0)
+    {
+        if (err == -1)
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/LIST")));
+        else if (err == 1)
+            sendServerToClient(client, ERR_CUSTOM(std::string("/LIST Excessive argument is given")));
+        return;
+    }
     if (IsExistChannel(params[0]))
     {
-        std::cout << '@' << _channels[params[0]].getOperator()->_nick << '\n';
-        for (std::vector<Client>::iterator it = _channels[params[0]].getMembers().begin(); it != _channels[params[0]].getMembers().end(); it++)
+       sendServerToClient(client, "@" +  _channels.at(params[0]).getOperator()->_nick + '\n');
+        for (std::vector<Client>::iterator it =  _channels.at(params[0]).getMembers().begin(); it !=  _channels.at(params[0]).getMembers().end(); it++)
         {
-            std::cout << it->_nick << "\n";
+            sendServerToClient(client,it->_nick + "\n");
         }
     }
     else

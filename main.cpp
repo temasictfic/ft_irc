@@ -13,7 +13,7 @@
 #include <algorithm>
 #include "Client.hpp"
 #include "Channel.hpp"
-#include "Errors.hpp"
+#include "Replies.hpp"
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {

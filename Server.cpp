@@ -197,6 +197,22 @@ int Server::sendServerToClient(Client& reciever, const std::string &message)
     return 0;
 }
 
+int Server::sendServerToChannel(const std::string& ChannelName, const std::string &message)
+{
+    std::string formattedMessage = ChannelName + ": " + message;
+    std::vector<Client>::iterator client = _channels.at(ChannelName).getMembers().begin();
+  std::vector<Client>::iterator end = _channels.at(ChannelName).getMembers().end();
+    for(; client != end; client++)
+    {
+        if (send(client->getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
+        {
+            std::cerr << "Failed to send chat message between " << ChannelName << " -> " << client->_nick << "\n";
+            continue;
+        }
+    }
+    return 0;
+}
+
 int Server::sendClientToClient(Client& sender, Client& reciever, const std::string &message)
 {
     std::string formattedMessage = sender._nick + ": " + message;

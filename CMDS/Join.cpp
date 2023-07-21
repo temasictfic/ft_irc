@@ -17,10 +17,13 @@
 //ERR_USERONCHANNEL (443)
 void Server::Join(Client &client,std::vector<const std::string &> params)
 {
-    if(ParamsSizeControl(params,2))
+    if (int err = ParamsSizeControl(params, 1, 1) != 0)
     {
-        sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/JOIN")));
-        return ;
+        if (err == -1)
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/JOIN")));
+        else if (err == 1)
+            sendServerToClient(client, ERR_CUSTOM(std::string("/JOIN Excessive argument is given")));
+        return;
     }
     if (IsExistChannel(params[0]))
     {
@@ -33,19 +36,22 @@ void Server::Join(Client &client,std::vector<const std::string &> params)
         else if (IsKeyWrong(params[0], params[1]))
             sendServerToClient(client,ERR_BADCHANNELKEY(params[0]));
         else
-            _channels[params[0]].addMembers(client);
-    
+        {
+            _channels.at(params[0]).addMembers(client);
+            sendServerToClient(client, std::string("Topic: " + _channels.at(params[0])._topic));
+            sendServerToChannel(params[0], std::string(client._nick + " has joined."));
+        }
     }
     else
     {
-        if (InvalidLetter(params[0]) || params[0][0] != '#')
-            sendServerToClient(client, ERR_CUSTOM(std::string("Forbidden letter in use as Channel name or doesn't use #.\n")));
+        if (InvalidLetter(params[0]) || InvalidPrefix(params[0]) || params[0][0] != '#')
+            sendServerToClient(client, ERR_CUSTOM(std::string("Forbidden letter in use as Channel name or didn't use #.\n")));
         else
         {
-            Channel newish(params[0]);
+            Channel newish(params[0], client);
             _channels.insert(std::pair<std::string, Channel>(params[0], newish));
             if(!params[1].empty())
-                _channels[params[0]].setKey(params[1]);
+                _channels.at(params[0]).setKey(params[1]);
         }
     }
 }

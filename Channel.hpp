@@ -24,8 +24,8 @@ public:
     std::string _topic;
     unsigned int _clientLimit;
     
-    Channel();
-    Channel(std::string ChannelName);
+
+    Channel(const std::string& ChannelName, Client& op);
     ~Channel();
 
     const std::string &getKey() const;
