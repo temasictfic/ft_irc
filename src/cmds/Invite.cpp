@@ -14,9 +14,15 @@
 //ERR_NOSUCHNICK (401) *
 
 
-void Server::Invite(Client &client, std::vector<const std::string &> params)
+void Server::Invite(Client &client, std::vector<std::string> params)
 {
-    if (int err = ParamsSizeControl(params, 2, 0) != 0)
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    int err = ParamsSizeControl(params, 2, 0);
+    if (err != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/INVITE")));
@@ -32,10 +38,10 @@ void Server::Invite(Client &client, std::vector<const std::string &> params)
             sendServerToClient(client, ERR_USERONCHANNEL(invited._nick, params[0]));
             return;
         }
-        std::vector<const std::string &> channel(1,params[0]);
-        if (_channels.at(params[0])._mode == Mode::InviteOnly && _channels.at(params[0]).getOperator()->_nick == client._nick)  
+        std::vector<std::string> channel(1,params[0]);
+        if (_channels.at(params[0])._mode == InviteOnly && _channels.at(params[0]).getOperator()->_nick == client._nick)  
             Join(invited, channel);
-        else if (_channels.at(params[0])._mode == Mode::InviteOnly)
+        else if (_channels.at(params[0])._mode == InviteOnly)
             sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
         else if(IsBannedClient(invited,params[0]) && _channels.at(params[0]).getOperator()->_nick == client._nick) //is operator yaz her şey bittikten sonra okuması kötü oluyor böyle
         {

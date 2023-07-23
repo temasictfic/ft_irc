@@ -17,8 +17,13 @@
  //PRIVMSG @#bunny :Hi! I have a problem!  //Send to chanel op of bunny
  //PRIVMSG Angel :yes I'm receiving it !  //Send to nickname Angel
 
-void Server::PrivMsg(class Client &client, std::vector<const std::string &> params)
+void Server::PrivMsg(class Client &client, std::vector<std::string > params)
 {
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
     if(params.size() < 2)
     {
         sendServerToClient(client,ERR_NOTEXTTOSEND());
@@ -30,7 +35,7 @@ void Server::PrivMsg(class Client &client, std::vector<const std::string &> para
         return ;
     }
     std::string message = client._nick + ":";
-    for(int index = 1; index < params.size(); index++)
+    for(size_t index = 1; index < params.size(); index++)
     {
         std::string tempmessage(message);
         message = tempmessage + " " + params[index]; 

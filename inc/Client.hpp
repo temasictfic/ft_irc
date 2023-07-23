@@ -21,9 +21,10 @@ public:
     std::string _username;
     std::string _realname;
     enum RegistrationState _status;
-    class Channel *_channel;
+    Channel *_channel;
 
     Client(int clientSocket, size_t idx);
+    //Client();
     ~Client();
 
     //getter setter

@@ -15,9 +15,15 @@
 //ERR_CHANNELISFULL (471)
 //ERR_INVITEONLYCHAN (473)
 //ERR_USERONCHANNEL (443)
-void Server::Join(Client &client,std::vector<const std::string &> params)
+void Server::Join(Client &client,std::vector<std::string> params)
 {
-    if (int err = ParamsSizeControl(params, 1, 1) != 0)
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    int err = ParamsSizeControl(params, 1, 1);
+    if (err != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/JOIN")));
@@ -44,12 +50,12 @@ void Server::Join(Client &client,std::vector<const std::string &> params)
     }
     else
     {
-        if (InvalidLetter(params[0]) || InvalidPrefix(params[0]) || params[0][0] != '#')
+        if (InvalidLetter(params[0]) || params[0][0] != '#')
             sendServerToClient(client, ERR_CUSTOM(std::string("Forbidden letter in use as Channel name or didn't use #.\n")));
         else
         {
-            Channel newish(params[0], client);
-            _channels.insert(std::pair<std::string, Channel>(params[0], newish));
+            Channel newish(params[0],client);
+            _channels.insert(std::make_pair(std::string(params[0]), newish));
             if(!params[1].empty())
                 _channels.at(params[0]).setKey(params[1]);
         }

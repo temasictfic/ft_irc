@@ -8,4 +8,4 @@ bool ValidModeChars(const std::string &ModeString);
 bool InvalidPassword(const std::string &Password);
 bool InvalidLetter(const std::string &Nick);
 bool InvalidPrefix(const std::string &Nick);
-std::vector<const std::string & > split(std::string s, std::string delimiter);
+std::vector<std::string > split(const std::string &s, const std::string &delimiter);

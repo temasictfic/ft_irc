@@ -1,16 +1,19 @@
 #include "../inc/Channel.hpp"
 #include "../inc/Client.hpp"
 
-Channel::Channel(const std::string& ChannelName, Client& op)
+Channel::Channel(std::string ChannelName, Client &op)
 {
     _name = ChannelName;
     _topic = "";
     _mode = Default;
     _clientLimit = 10;
     _key = "";
-    _operator = &op;
+    _operator = NULL;
     op._channel = this;
 }
+
+Channel::Channel(){}
+
 Channel::~Channel()
 {
 }
@@ -25,12 +28,12 @@ void Channel::setKey(const std::string &key)
     _key = key;
 }
 
-std::vector<class Client> &Channel::getBanned()
+std::vector<class Client> Channel::getBanned()
 {
     return _banned;
 }
 
-std::vector<class Client> &Channel::getMembers() 
+std::vector<class Client> Channel::getMembers() 
 {
     return _members;
 }

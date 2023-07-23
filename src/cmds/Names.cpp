@@ -5,9 +5,15 @@
 //RPL_NAMREPLY (353)
 //RPL_ENDOFNAMES (366)
 
-void Server::Names(class Client & client,std::vector<const std::string &> params)
+void Server::Names(class Client & client,std::vector<std::string> params)
 {
-    if (int err = ParamsSizeControl(params, 1, 0) != 0)
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    int err = ParamsSizeControl(params, 1, 0);
+    if (err != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/LIST")));

@@ -1,16 +1,18 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Utils.hpp"
-#include "../../inc/Replies.hpp"
 
 
 //ERR_NONICKNAMEGIVEN()
 //ERR_ERRONEUSNICKNAME(Nick)
 //ERR_NICKNAMEINUSE (Nick)
-void Server::Nick(Client &client, std::vector<const std::string &> params)
+void Server::Nick(Client &client, std::vector<std::string> params)
 {
-    if (int err = ParamsSizeControl(params, 1, 0) != 0)
+    if (client._status == None)
+    {
+        sendServerToClient(client, ERR_NOTREGISTERED());
+        return;
+    }
+    int err = ParamsSizeControl(params, 1, 0);
+    if (err != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NICK")));
@@ -24,12 +26,12 @@ void Server::Nick(Client &client, std::vector<const std::string &> params)
         sendServerToClient(client, ERR_NICKNAMEINUSE(params[0]));
     switch (client._status)
     {
-    case RegistrationState::PassRegistered:
+    case PassRegistered:
         client._nick = ToLowercase(params[0]);
         client._username = ToLowercase(params[0]);
         client._realname = ToLowercase(params[0]);
-        client._status = RegistrationState::NickRegistered;
-        // nick assigned yazdır?;
+        client._status = NickRegistered;
+        std::cout << "Nick assigned" << "\n";
         break;
     default:
         std::string old_nick = client._nick;

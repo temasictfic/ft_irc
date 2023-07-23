@@ -1,8 +1,9 @@
 #include "../../inc/Server.hpp"
 
-void Server::Notice(class Client & server, std::vector<const std::string&> params)
+void Server::Notice(class Client & server, std::vector<std::string> params)
 {
-    std::cout << "I have noticed." << "\n";
+    (void)server;
+    std::cout << "I have noticed." << params[0] <<"\n";
 /*     if(params[0][0] == '#')
         sendServerToChannel(bot, params[0]);
     else

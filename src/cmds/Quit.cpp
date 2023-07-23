@@ -1,16 +1,17 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Replies.hpp"
-#include "../../inc/Utils.hpp"
-#include <unistd.h>
 
 // NONE*
 
-void Server::Quit(Client &client, std::vector<const std::string &> params)
+void Server::Quit(Client &client, std::vector<std::string > params)
 {
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    (void)params;
     // apart from channel.
-    Part(client, std::vector<const std::string&>(1, client._channel->_name));
+    Part(client, std::vector<std::string>(1, client._channel->_name));
     // remove from clients.
     _clients.erase(_clients.begin() + client._idx);
     close(client.getSocketFd());

@@ -11,8 +11,6 @@ enum Mode
     ProtectedTopic = 4
 };
 
-const std::map<char, enum Mode> modes = {{'i', InviteOnly}, {'k', KeyChannel}, {'t', ProtectedTopic}};
-
 class Channel
 {
 private:
@@ -27,14 +25,15 @@ public:
     unsigned int _clientLimit;
     
 
-    Channel(const std::string& ChannelName, Client& op);
+    Channel();
+    Channel(std::string ChannelName, class Client &);
     ~Channel();
 
     const std::string &getKey() const;
     void setKey(const std::string &key);
 
-    std::vector<class Client> &getBanned();
-    std::vector<class Client> &getMembers();
+    std::vector<class Client> getBanned();
+    std::vector<class Client> getMembers();
 
     class Client  *getOperator() const;
     void setOperator(class Client *Obj);

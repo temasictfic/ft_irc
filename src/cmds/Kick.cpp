@@ -9,9 +9,15 @@
 //ERR_NOTONCHANNEL (442)*
 
 
-void Server::Kick(Client &client, std::vector<const std::string &> params)
+void Server::Kick(Client &client, std::vector<std::string> params)
 {
-     if (int err = ParamsSizeControl(params, 2, 0) != 0)
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    int err = ParamsSizeControl(params, 2, 0);
+     if (err != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/KICK")));

@@ -11,9 +11,15 @@
 //RPL_NOTOPIC (331)
 //RPL_TOPIC (332)
 
-void Server::Topic(Client &client, std::vector<const std::string &> params)
+void Server::Topic(Client &client, std::vector<std::string > params)
 {
-    if(int err = ParamsSizeControl(params,2,0) != 0)
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    int err = ParamsSizeControl(params,2,0);
+    if(err != 0)
     {   
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/TOPIC")));
@@ -25,12 +31,12 @@ void Server::Topic(Client &client, std::vector<const std::string &> params)
         sendServerToClient(client, ERR_CUSTOM(std::string("Wrong Prefix or letter use in Topic.\n")));
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
-        if ( _channels.at(params[0])._mode == Mode::ProtectedTopic &&  _channels.at(params[0]).getOperator()->_nick == client._nick)
+        if ( _channels.at(params[0])._mode == ProtectedTopic &&  _channels.at(params[0]).getOperator()->_nick == client._nick)
         {
              _channels.at(params[0])._topic = params[1];
             sendServerToChannel(params[0], std::string("Topic: " + params[1]));
         }
-        else if ( _channels.at(params[0])._mode == Mode::ProtectedTopic)
+        else if ( _channels.at(params[0])._mode == ProtectedTopic)
                sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
         else
         {

@@ -1,15 +1,19 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Replies.hpp"
+
 
 //ERR_NEEDMOREPARAMS (461)*
 //ERR_NOSUCHCHANNEL (403)*
 //ERR_NOTONCHANNEL (442)*
 
-void Server::Part(Client &client, std::vector<const std::string &> params)
+void Server::Part(Client &client, std::vector<std::string> params)
 {
-    if (int err = ParamsSizeControl(params, 1, 0) != 0)
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
+    int err = ParamsSizeControl(params, 1, 0);
+    if (err != 0)
     {
         if (err == -1)
             sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/PART")));
@@ -19,7 +23,7 @@ void Server::Part(Client &client, std::vector<const std::string &> params)
     }
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
-        if(_channels[params[0]].getOperator()->_nick == client._nick)
+        if(_channels.at(params[0]).getOperator()->_nick == client._nick)
         {
             sendServerToChannel(params[0], "operator" + client._nick + ": is part" + params[0] + "\n");
             for(std::vector<Client>::iterator it = _channels.at(params[0]).getMembers().begin(); it != _channels.at(params[0]).getMembers().end(); it++)

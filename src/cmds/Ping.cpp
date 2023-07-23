@@ -2,7 +2,12 @@
 
 //ERR_NEEDMOREPARAMS(Command)
 
-void Server::Ping(Client &client, std::vector<const std::string&>)
+void Server::Ping(Client &client, std::vector<std::string>)
 {
+    if(client._status != UsernameRegistered)
+    {
+        sendServerToClient(client,ERR_NOTREGISTERED());
+        return ;
+    }
     sendServerToClient(client, "Pong");
 }

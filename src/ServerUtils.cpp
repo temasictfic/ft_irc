@@ -1,7 +1,4 @@
 #include "../inc/Server.hpp"
-#include "../inc/Client.hpp"
-#include "../inc/Channel.hpp"
-#include "../inc/Utils.hpp"
 
 bool Server::IsExistClient(const std::string &ClientName, const int flag)
 {
@@ -26,7 +23,7 @@ bool Server::IsExistChannel(const std::string &ChannelName)
 
 bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
 {
-    std::vector<Client> &BannedVec = _channels.at(ChannelName).getBanned();
+    std::vector<Client> BannedVec = _channels.at(ChannelName).getBanned();
     for (std::vector<Client>::iterator it = BannedVec.begin(); it != BannedVec.end(); it++)
     {
         if (it->_nick == client._nick)
@@ -37,7 +34,10 @@ bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // c
 
 bool Server::IsInChannel(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
 {
-    return client._channel->_name == ChannelName;
+    if (client._channel)
+        return client._channel->_name == ChannelName;
+    else
+        return false;
 }
 
 /* bool Server::IsOperator(Client &client, const std::string& Nick)
@@ -78,8 +78,9 @@ Client &Server::findClient(const std::string &NickName)
     return _clients[idx];
 }
 
-bool Server::ChangeMode(enum Mode &mode, const std::string &ModeString)
+bool Server::ChangeMode(enum Mode &mode, const std::string &ModeString, std::map<char, enum Mode> modes)
 {
+
     if (!InvalidLetter(ModeString) || !InvalidPrefix(ModeString))
     {
         if (ModeString[0] == '+')
@@ -96,13 +97,13 @@ bool Server::ChangeMode(enum Mode &mode, const std::string &ModeString)
     return false;
 }
 
-int Server::ParamsSizeControl(std::vector<const std::string&> params, size_t necessary, size_t optional)
+int Server::ParamsSizeControl(std::vector<std::string> params, size_t necessary, size_t optional)
 {
-    if (params.size() < necessary + optional)
+    if (params.size() < necessary)
         return -1;
     else if(params.size() > necessary + optional)
         return 1;
-    for (size_t i = 0; i < necessary + optional; i++)
+    for (size_t i = 0; i < params.size(); i++)
     {
         if(params[i].empty())
             return -1;
