@@ -28,6 +28,7 @@ clean:
 
 fclean: clean
 	@rm -rf $(NAME)
+	@rm -rf $(OBJDIR)
 
 re: fclean all
 

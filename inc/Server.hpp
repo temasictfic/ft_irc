@@ -28,8 +28,8 @@ private:
     int _serverSocketFd;
     int _port;
     std::string _password;
-    static std::vector<class Client> _clients;
-    static std::map<std::string, class Channel> _channels;
+    std::vector<class Client> _clients;
+    std::map<std::string, class Channel> _channels;
 
     // struct sockaddr_in  _serverAddress;
 public:
