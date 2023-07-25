@@ -19,7 +19,7 @@ Channel::Channel(){}
 Channel::~Channel()
 {
     _operator->_channel = NULL;
-    _operator = NULL;
+
     _banned.clear();
     for(std::vector<Client*>::iterator it = _members.begin(); it != _members.end(); it++)
         (*it)->_channel = NULL;
@@ -54,7 +54,8 @@ void Channel::addMembers(Client &client)
 
 void Channel::addBanned(Client &client)
 {
-    _banned.push_back(&client);
+    client._channel = NULL;
+     _banned.push_back(&client);
 }
 
 void Channel::removeMembers(Client &client)
@@ -76,7 +77,7 @@ void Channel::removeBanned(Client &client)
     {
         if((*it)->_nick == client._nick)
         {
-            _members.erase(it);
+            _banned.erase(it);
             return ;
         }
     }

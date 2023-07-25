@@ -23,9 +23,11 @@ bool Server::IsExistChannel(const std::string &ChannelName)
 
 bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
 {
-    std::vector<Client*> BannedVec = _channels.at(ChannelName)->getBanned();
-    for (std::vector<Client*>::iterator it = BannedVec.begin(); it != BannedVec.end(); it++)
+    std::vector<Client*>::iterator it = _channels.at(ChannelName)->getBanned().begin();
+    std::vector<Client*>::iterator end = _channels.at(ChannelName)->getBanned().end();
+    for (; it != end; it++)
     {
+        std::cout << (*it)->_nick << "$\n";
         if ((*it)->_nick == client._nick)
             return true;
     }
@@ -69,13 +71,12 @@ bool Server::IsChannelLimitFull(const std::string &ChannelName)
 
 Client &Server::findClient(const std::string &NickName)
 {
-    int idx = -1;
     for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients.end(); it++)
-    {
+    { 
         if ((*it)->_nick == NickName)
-            idx = (*it)->_idx;
+            return (**it);
     }
-    return *_clients[idx];
+    return *_clients[-1];
 }
 
 int Server::ParamsSizeControl(std::vector<std::string> params, size_t necessary, size_t optional)

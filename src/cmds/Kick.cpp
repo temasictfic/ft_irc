@@ -25,7 +25,7 @@ void Server::Kick(Client &client, std::vector<std::string> params)
             sendServerToClient(client, ERR_CUSTOM(std::string("/KICK Excessive argument is given")));
         return;
     }
-    if(IsExistChannel(params[0]) && IsInChannel(client, params[0]) && client._channel->getOperator()->_nick == client._nick)
+    if(IsExistChannel(params[0]) && IsExistClient(params[1],0) && IsInChannel(client, params[0]) && client._channel->getOperator()->_nick == client._nick)
     {
         Client &kicked = findClient(params[1]);
         if(IsInChannel(kicked, params[0]))
@@ -33,6 +33,7 @@ void Server::Kick(Client &client, std::vector<std::string> params)
             sendServerToChannel(params[0], std::string(params[1] + ": kicked from channel."));
             client._channel->removeMembers(kicked);
             client._channel->addBanned(kicked); //Banlama işi mode ta yapılabilir.  
+
         }
         else
             sendServerToClient(client, ERR_USERNOTINCHANNEL(params[1], params[0]));

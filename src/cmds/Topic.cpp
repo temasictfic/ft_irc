@@ -18,30 +18,29 @@ void Server::Topic(Client &client, std::vector<std::string > params)
         sendServerToClient(client,ERR_NOTREGISTERED());
         return ;
     }
-    int err = ParamsSizeControl(params,2,0);
-    if(err != 0)
-    {   
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/TOPIC")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/TOPIC Excessive argument is given")));
-        return ;
+    if(params.empty())
+    {
+        sendServerToClient(client,ERR_NEEDMOREPARAMS(std::string("/TOPIC")));
+        return;
     }
-    if (InvalidPrefix(params[1]) || InvalidLetter(params[1]))
-        sendServerToClient(client, ERR_CUSTOM(std::string("Wrong Prefix or letter use in Topic.\n")));
+    std::string message;
+    for(size_t index = 1; index < params.size(); index++)
+        message += params[index];
+    if(params.size() < 3)
+        message = "";
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
         if ( _channels.at(params[0])->_mode == ProtectedTopic &&  _channels.at(params[0])->getOperator()->_nick == client._nick)
         {
-             _channels.at(params[0])->_topic = params[1];
-            sendServerToChannel(params[0], std::string("Topic: " + params[1]));
+             _channels.at(params[0])->_topic = message;
+            sendServerToChannel(params[0], std::string("Topic: " + message));
         }
         else if ( _channels.at(params[0])->_mode == ProtectedTopic)
                sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
         else
         {
-             _channels.at(params[0])->_topic = params[1];
-            sendServerToChannel(params[0], std::string("Topic: " + params[1]));
+             _channels.at(params[0])->_topic = message;
+            sendServerToChannel(params[0], std::string("Topic: " + message));
         }
     }
     else

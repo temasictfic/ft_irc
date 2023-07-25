@@ -34,12 +34,9 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
         sendServerToClient(client, ERR_NORECIPIENT(std::string("/PRIVMSG.")));
         return ;
     }
-    std::string message = client._nick + ":";
+    std::string message;
     for(size_t index = 1; index < params.size(); index++)
-    {
-        std::string tempmessage(message);
-        message = tempmessage + " " + params[index]; 
-    }
+        message += params[index]; 
     if(!IsExistClient(params[0],0))
     {
         sendServerToClient(client,ERR_NOSUCHNICK(params[0]));

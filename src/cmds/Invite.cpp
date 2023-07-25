@@ -30,7 +30,7 @@ void Server::Invite(Client &client, std::vector<std::string> params)
             sendServerToClient(client, ERR_CUSTOM(std::string("/INVITE Excessive argument is given")));
         return;
     }
-    if (IsInChannel(client,params[0]) && (IsExistClient(params[1], 0) && (IsExistChannel(params[0]))))
+    if (IsInChannel(client,params[0]) && IsExistClient(params[1], 0) && IsExistChannel(params[0]))
     {
         Client& invited = findClient(params[1]);
         if (IsInChannel(invited, params[0]))
@@ -38,12 +38,13 @@ void Server::Invite(Client &client, std::vector<std::string> params)
             sendServerToClient(client, ERR_USERONCHANNEL(invited._nick, params[0]));
             return;
         }
-        std::vector<std::string> channel(1,params[0]);
+        std::vector<std::string> channel;
+        channel.push_back(params[0]);
         if (_channels.at(params[0])->_mode == InviteOnly && _channels.at(params[0])->getOperator()->_nick == client._nick)  
             Join(invited, channel);
         else if (_channels.at(params[0])->_mode == InviteOnly)
             sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
-        else if(IsBannedClient(invited,params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick) //is operator yaz her şey bittikten sonra okuması kötü oluyor böyle
+        else if(IsBannedClient(invited,params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick)
         {
             _channels.at(params[0])->removeBanned(invited);
             Join(invited, channel);

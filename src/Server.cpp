@@ -82,6 +82,7 @@ Server Server::Listen()
         close(_serverSocketFd);
         exit(EXIT_FAILURE);
     }
+    _serverAddress = serverAddress;
     // Listen for incoming connections
     if (listen(_serverSocketFd, MAX_CLIENTS) == -1)
     {
@@ -142,8 +143,8 @@ void Server::Run()
             fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK);
 
             // Add client to the vector
-            size_t idx = _clients.size();
-            Client* newish = new Client(clientSocket, idx); // registration sıkıntıları yaratıyor buraya dön.
+            Client* newish = new Client(clientSocket);
+            newish->addHostname(_serverAddress);
             _clients.push_back(newish);
         }
 
@@ -158,6 +159,12 @@ void Server::Serve(fd_set readSet)
     std::vector<Client*>::iterator client = _clients.begin();
     while (client != _clients.end())
     {
+        if ((*client)->_online == false)
+        {
+            close((*client)->getSocketFd());
+            client = _clients.erase(client);
+            continue;
+        }
         int clientSocket = (*client)->getSocketFd();
 
         if (FD_ISSET(clientSocket, &readSet))

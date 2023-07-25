@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <fcntl.h>
 #include <cerrno>
 #include <cstring>
@@ -26,13 +27,13 @@ const int BUFFER_SIZE = 1024;
 class Server
 {
 private:
+    sockaddr_in  _serverAddress;
     int _serverSocketFd;
     int _port;
     std::string _password;
     std::vector<class Client*> _clients;
     std::map<std::string, class Channel*> _channels;
-
-    // struct sockaddr_in  _serverAddress;
+    
 public:
     std::map<std::string, void (Server::*)(class Client &, std::vector<std::string>)> cmds;
 
@@ -76,7 +77,7 @@ public:
     int ParamsSizeControl(std::vector<std::string> params, size_t index, size_t optional);
     bool PasswordMatched(const std::string &PasswordOrigin, const std::string &PasswordGiven);
 
-    // Server.cpp
+    // Send messagges
     int sendServerToClient(Client &, const std::string &message);
     int sendServerToChannel(const std::string &ChannelName, const std::string &message);
     int sendClientToClient(Client &sender, Client &reciever, const std::string &message);

@@ -11,8 +11,12 @@ void Server::Quit(Client &client, std::vector<std::string> params)
     }
     (void)params;
     // apart from channel.
-    Part(client, std::vector<std::string>(1, client._channel->_name));
-    // remove from clients.
-    _clients.erase(_clients.begin() + client._idx);
-    close(client.getSocketFd());
+    if (client._channel)
+    {
+        std::vector<std::string> par;
+        par.push_back(client._channel->_name);
+        Part(client, par);
+    }
+    // make client offline.
+    client._online = false;
 }
