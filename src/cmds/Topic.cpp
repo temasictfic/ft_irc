@@ -31,16 +31,16 @@ void Server::Topic(Client &client, std::vector<std::string > params)
         sendServerToClient(client, ERR_CUSTOM(std::string("Wrong Prefix or letter use in Topic.\n")));
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
-        if ( _channels.at(params[0])._mode == ProtectedTopic &&  _channels.at(params[0]).getOperator()->_nick == client._nick)
+        if ( _channels.at(params[0])->_mode == ProtectedTopic &&  _channels.at(params[0])->getOperator()->_nick == client._nick)
         {
-             _channels.at(params[0])._topic = params[1];
+             _channels.at(params[0])->_topic = params[1];
             sendServerToChannel(params[0], std::string("Topic: " + params[1]));
         }
-        else if ( _channels.at(params[0])._mode == ProtectedTopic)
+        else if ( _channels.at(params[0])->_mode == ProtectedTopic)
                sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
         else
         {
-             _channels.at(params[0])._topic = params[1];
+             _channels.at(params[0])->_topic = params[1];
             sendServerToChannel(params[0], std::string("Topic: " + params[1]));
         }
     }

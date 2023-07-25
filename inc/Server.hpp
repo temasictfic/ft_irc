@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <fcntl.h>
+#include <cerrno>
 #include <cstring>
 #include <sys/types.h>
 #include <cstdlib>
@@ -28,8 +29,8 @@ private:
     int _serverSocketFd;
     int _port;
     std::string _password;
-    std::vector<class Client> _clients;
-    std::map<std::string, class Channel> _channels;
+    std::vector<class Client*> _clients;
+    std::map<std::string, class Channel*> _channels;
 
     // struct sockaddr_in  _serverAddress;
 public:
@@ -42,8 +43,8 @@ public:
     Server Listen();
     void Run();
     void Serve(fd_set readSet);
-    void ProcessCommand(std::string &message, Client &client);
-    void ProcessChat(const std::string &message, Client &client);
+    void ProcessCommand(std::string &message, Client *client);
+    void ProcessChat(const std::string &message, Client *client);
 
     // Commands
     void Pass(class Client &, std::vector<std::string>);
@@ -70,7 +71,6 @@ public:
     // bool IsOperator(Client &client, const std::string& Nick);
     bool HasChannelKey(const std::string &ChannelName);
     bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
-    bool ChangeMode(enum Mode &mode, const std::string &ModeString, std::map<char, enum Mode> modes);
     bool IsChannelLimitFull(const std::string &ChannelName);
     Client &findClient(const std::string &NickName);
     int ParamsSizeControl(std::vector<std::string> params, size_t index, size_t optional);

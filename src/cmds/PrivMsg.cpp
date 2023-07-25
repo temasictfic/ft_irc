@@ -51,7 +51,7 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
         return ;
     }
     if (IsExistChannel(params[0]))
-        sendClientToClient(client,*_channels.at(params[0]).getOperator(),message);
+        sendClientToClient(client,*_channels.at(params[0])->getOperator(),message);
     else if (IsExistClient(params[0], 0))
        sendClientToClient(client,findClient(params[0]),message);
 }

@@ -2,7 +2,7 @@
 
 // NONE*
 
-void Server::Quit(Client &client, std::vector<std::string > params)
+void Server::Quit(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {

@@ -16,17 +16,17 @@ void Server::Names(class Client & client,std::vector<std::string> params)
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/LIST")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NAMES")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/LIST Excessive argument is given")));
+            sendServerToClient(client, ERR_CUSTOM(std::string("/NAMES Excessive argument is given")));
         return;
     }
     if (IsExistChannel(params[0]))
     {
-       sendServerToClient(client, "@" +  _channels.at(params[0]).getOperator()->_nick + '\n');
-        for (std::vector<Client>::iterator it =  _channels.at(params[0]).getMembers().begin(); it !=  _channels.at(params[0]).getMembers().end(); it++)
+       sendServerToClient(client, "@" +  _channels.at(params[0])->getOperator()->_nick + '\n');
+        for (std::vector<Client*>::iterator it =  _channels.at(params[0])->getMembers().begin(); it !=  _channels.at(params[0])->getMembers().end(); ++it)
         {
-            sendServerToClient(client,it->_nick + "\n");
+            sendServerToClient(client,(*it)->_nick + "\n");
         }
     }
     else

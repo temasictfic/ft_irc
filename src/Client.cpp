@@ -14,7 +14,7 @@ Client::Client(int clientSocket, size_t idx) : _nick(""), _username(""), _realna
 
 Client::~Client()
 {
-    
+    _channel = NULL;
 }
 
 int Client::getSocketFd() const

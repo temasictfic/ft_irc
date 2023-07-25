@@ -1,7 +1,5 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Replies.hpp"
+
 //ERR_NOSUCHNICK (401)-
 //If <modestring> is not given, the RPL_UMODEIS (221) numeric 
 //is sent back containing the current modes of the target user.
@@ -35,7 +33,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
             sendServerToClient(client, ERR_CUSTOM(std::string("/MODE Excessive argument is given")));
         return;
     }
-    if (IsExistChannel(params[0]) && _channels.at(params[0]).getOperator()->_nick == client._nick)
+    if (IsExistChannel(params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick)
     {
         if (params.size() == 1)
         {
@@ -49,7 +47,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
             sendServerToClient(client, msg);
         }
         else if (params[1].size() == 2)
-            ChangeMode(_channels.at(params[0])._mode, params[1], modes) ? sendServerToClient(client,"Mode successfully changed as.\n") : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
+            ChangeMode(_channels.at(params[0])->_mode, params[1], modes) ? sendServerToClient(client,"Mode successfully changed as.\n") : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
         else
             sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
     }

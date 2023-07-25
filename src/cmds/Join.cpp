@@ -39,12 +39,12 @@ void Server::Join(Client &client,std::vector<std::string> params)
             sendServerToClient(client,ERR_BANNEDFROMCHAN(params[0]));
         else if (IsChannelLimitFull(params[0]))
             sendServerToClient(client,ERR_CHANNELISFULL(params[0]));
-        else if (IsKeyWrong(params[0], params[1]))
+        else if (params.size() == 2 && IsKeyWrong(params[0], params[1]))
             sendServerToClient(client,ERR_BADCHANNELKEY(params[0]));
         else
         {
-            _channels.at(params[0]).addMembers(client);
-            sendServerToClient(client, std::string("Topic: " + _channels.at(params[0])._topic));
+            _channels.at(params[0])->addMembers(client);
+            sendServerToClient(client, std::string("Topic: " + _channels.at(params[0])->_topic));
             sendServerToChannel(params[0], std::string(client._nick + " has joined."));
         }
     }
@@ -54,10 +54,11 @@ void Server::Join(Client &client,std::vector<std::string> params)
             sendServerToClient(client, ERR_CUSTOM(std::string("Forbidden letter in use as Channel name or didn't use #.\n")));
         else
         {
-            Channel newish(params[0],client);
+            Channel* newish = new Channel(params[0],client);
+            newish->addMembers(client);
             _channels.insert(std::make_pair(std::string(params[0]), newish));
-            if(!params[1].empty())
-                _channels.at(params[0]).setKey(params[1]);
+           if(params.size() == 2)
+               _channels.at(params[0])->setKey(params[1]);
         }
     }
 }

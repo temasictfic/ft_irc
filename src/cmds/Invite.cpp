@@ -39,13 +39,13 @@ void Server::Invite(Client &client, std::vector<std::string> params)
             return;
         }
         std::vector<std::string> channel(1,params[0]);
-        if (_channels.at(params[0])._mode == InviteOnly && _channels.at(params[0]).getOperator()->_nick == client._nick)  
+        if (_channels.at(params[0])->_mode == InviteOnly && _channels.at(params[0])->getOperator()->_nick == client._nick)  
             Join(invited, channel);
-        else if (_channels.at(params[0])._mode == InviteOnly)
+        else if (_channels.at(params[0])->_mode == InviteOnly)
             sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
-        else if(IsBannedClient(invited,params[0]) && _channels.at(params[0]).getOperator()->_nick == client._nick) //is operator yaz her şey bittikten sonra okuması kötü oluyor böyle
+        else if(IsBannedClient(invited,params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick) //is operator yaz her şey bittikten sonra okuması kötü oluyor böyle
         {
-            _channels.at(params[0]).removeBanned(invited);
+            _channels.at(params[0])->removeBanned(invited);
             Join(invited, channel);
         }
         else
