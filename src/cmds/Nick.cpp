@@ -1,6 +1,5 @@
 #include "../../inc/Server.hpp"
 
-
 //ERR_NONICKNAMEGIVEN()
 //ERR_ERRONEUSNICKNAME(Nick)
 //ERR_NICKNAMEINUSE (Nick)

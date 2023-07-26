@@ -1,8 +1,5 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Utils.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Replies.hpp"
+
 
 //ERR_NEEDMOREPARAMS (461)*
 //ERR_NOSUCHCHANNEL (403)*
@@ -25,9 +22,7 @@ void Server::Topic(Client &client, std::vector<std::string > params)
     }
     std::string message;
     for(size_t index = 1; index < params.size(); index++)
-        message += params[index];
-    if(params.size() < 3)
-        message = "";
+        message += " " + params[index];
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
         if ( _channels.at(params[0])->_mode == ProtectedTopic &&  _channels.at(params[0])->getOperator()->_nick == client._nick)

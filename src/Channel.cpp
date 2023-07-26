@@ -93,19 +93,24 @@ void Channel::setOperator(Client *client)
     _operator = client;
 }
 
-bool ChangeMode(enum Mode &mode, const std::string &ModeString, std::map<char, enum Mode> modes)
+bool ChangeMode(Client &client, const std::vector<std::string> &params, std::map<char,int> modes)
 {
-
-    if (!InvalidLetter(ModeString) || !InvalidPrefix(ModeString))
+    if(params.size() == 3 && params[1][1] != 'k')
+            return false;
+    if (modes.find(params[1][1]) != modes.end())
     {
-        if (ModeString[0] == '+')
+        if (params[1][0] == '+')
         {
-            mode = static_cast<enum Mode>(mode | modes.at(ModeString[1]));
+            client._channel->_mode |= modes.at(params[1][1]);
+            if(params[1][1] == 'k' && params.size() == 3)
+                client._channel->setKey(params[2]);
             return true;
         }
-        else if (ModeString[0] == '-')
+        else if (params[1][0] == '-')
         {
-            mode = static_cast<enum Mode>(mode ^ modes.at(ModeString[1]));
+            client._channel->_mode ^= modes.at(params[1][1]);
+            if(params[1][1] == 'k' && params.size() == 3)
+                client._channel->setKey("");
             return true;
         }
     }

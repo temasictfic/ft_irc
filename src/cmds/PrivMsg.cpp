@@ -1,7 +1,4 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Replies.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
 
 //If <target> is a channel name and the client is banned
 //the message will not be delivered and the command will silently fail.

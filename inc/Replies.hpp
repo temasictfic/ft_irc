@@ -23,7 +23,7 @@
 #define ERR_PASSWDMISMATCH() "ircserv :Password incorrect. (464)"
 #define ERR_YOUREBANNEDCREEP() "ircserv :You banned from this server. (465)"
 #define ERR_CHANNELISFULL(Channel) "ircserv " + Channel + " :Cannot join channel. (471)"
-#define ERR_UNKNOWNMODE(Modechar) "ircserv " + Modechar + ":is unknown mode char to me. (472)"
+#define ERR_UNKNOWNMODE(Modechar) "ircserv " + Modechar + " :is unknown mode char to me. (472)"
 #define ERR_INVITEONLYCHAN(Channel) "ircserv " + Channel + " :Cannot join channel. (473)"
 #define ERR_BANNEDFROMCHAN(Channel) "ircserv " + Channel + " :Cannot join channel. (474)"
 #define ERR_BADCHANNELKEY(Channel) "ircserv " + Channel + " :Cannot join channel. (475)"

@@ -1,7 +1,5 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Replies.hpp"
+
 //ERR_NEEDMOREPARAMS (461) *
 //ERR_NOSUCHCHANNEL (403) *
 //ERR_CHANOPRIVSNEEDED (482)*
@@ -32,8 +30,7 @@ void Server::Kick(Client &client, std::vector<std::string> params)
         {
             sendServerToChannel(params[0], std::string(params[1] + ": kicked from channel."));
             client._channel->removeMembers(kicked);
-            client._channel->addBanned(kicked); //Banlama işi mode ta yapılabilir.  
-
+            client._channel->addBanned(kicked); //Banlama işi mode ta yapılabilir.
         }
         else
             sendServerToClient(client, ERR_USERNOTINCHANNEL(params[1], params[0]));

@@ -1,8 +1,4 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Utils.hpp"
-#include "../../inc/Replies.hpp"
 
 // ERR_NEEDMOREPARAMS(Command)
 // ERR_ALREADYREGISTERED()

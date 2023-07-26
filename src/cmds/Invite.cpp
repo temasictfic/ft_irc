@@ -1,6 +1,3 @@
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Replies.hpp"
 #include "../../inc/Server.hpp"
 //When the invite is successful, the server MUST send a RPL_INVITING numeric to the command issuer,
 // and an INVITE message, with the issuer as <source>, to the target user. Other channel members SHOULD NOT be notified.
@@ -33,6 +30,7 @@ void Server::Invite(Client &client, std::vector<std::string> params)
     if (IsInChannel(client,params[0]) && IsExistClient(params[1], 0) && IsExistChannel(params[0]))
     {
         Client& invited = findClient(params[1]);
+        invited._invitedchan = params[0];
         if (IsInChannel(invited, params[0]))
         {
             sendServerToClient(client, ERR_USERONCHANNEL(invited._nick, params[0]));

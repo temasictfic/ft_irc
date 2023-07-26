@@ -12,7 +12,6 @@
 // followed by one RPL_ENDOFBANLIST (368) numeric.
 
 
-
 void Server::Mode(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
@@ -20,11 +19,13 @@ void Server::Mode(Client &client, std::vector<std::string> params)
         sendServerToClient(client,ERR_NOTREGISTERED());
         return ;
     }
-    std::map<char, enum Mode> modes;
+    std::map<char, int> modes;
+    modes['d'] = Default;
     modes['i'] = InviteOnly;
     modes['k'] = KeyChannel;
     modes['t'] = ProtectedTopic;
-    int err = ParamsSizeControl(params, 1, 1);
+
+    int err = ParamsSizeControl(params, 1, 2);
     if (err != 0)
     {
         if (err == -1)
@@ -37,17 +38,14 @@ void Server::Mode(Client &client, std::vector<std::string> params)
     {
         if (params.size() == 1)
         {
-            std::map<char, enum Mode>::iterator it = modes.begin();
             std::string msg = params[0] + " modes are: +";
-            for (; it != modes.end(); it++)
-            {
-                if (client._channel->_mode & it->second)
-                    msg + it->first;
-            }
+            for (std::map<char, int>::iterator it = modes.begin(); it != modes.end(); it++)
+                if (_channels.at(params[0])->_mode & it->second)
+                    msg += it->first;
             sendServerToClient(client, msg);
         }
         else if (params[1].size() == 2)
-            ChangeMode(_channels.at(params[0])->_mode, params[1], modes) ? sendServerToClient(client,"Mode successfully changed as.\n") : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
+            ChangeMode(client, params, modes) ? sendServerToChannel(client._channel->_name,"Mode successfully changed as " + params[1]) : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
         else
             sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
     }

@@ -159,14 +159,13 @@ void Server::Serve(fd_set readSet)
     std::vector<Client*>::iterator client = _clients.begin();
     while (client != _clients.end())
     {
+        int clientSocket = (*client)->getSocketFd();
         if ((*client)->_online == false)
         {
-            close((*client)->getSocketFd());
+            close(clientSocket);
             client = _clients.erase(client);
             continue;
         }
-        int clientSocket = (*client)->getSocketFd();
-
         if (FD_ISSET(clientSocket, &readSet))
         {
             char buffer[BUFFER_SIZE];
@@ -181,17 +180,17 @@ void Server::Serve(fd_set readSet)
                     std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
                 else
                     std::cerr << "Failed to read from client socket.\n";
-                Part(**client, std::vector<std::string>(1, (*client)->_channel->_name));
+                Quit(**client, std::vector<std::string>());
                 close(clientSocket);
                 client = _clients.erase(client);
                 continue;
             }
-            else if (bytesRead == 0)
+            if (bytesRead == 0)
             {
                 // Connection closed by the client
                 std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
 
-                Part(**client, std::vector<std::string>(1, (*client)->_channel->_name));
+                Quit(**client, std::vector<std::string>());
                 // Close the client socket
                 close(clientSocket);
 

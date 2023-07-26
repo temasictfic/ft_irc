@@ -12,7 +12,7 @@ void Server::List(class Client &client, std::vector<std::string> params)
         sendServerToClient(client,ERR_NOTREGISTERED());
         return ;
     }
-    if(params[0].empty())
+    if(params.size() == 1)
     {
         sendServerToClient(client, "List of Channels: ");
         for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)

@@ -53,7 +53,7 @@ bool Server::HasChannelKey(const std::string &ChannelName)
     return !NewKey.empty();
 }
 
-bool Server::IsKeyWrong(const std::string &ChannelName, const std::string &Key)
+/* bool Server::IsKeyWrong(const std::string &ChannelName, const std::string &Key)
 {
     if (HasChannelKey(ChannelName))
     {
@@ -62,7 +62,7 @@ bool Server::IsKeyWrong(const std::string &ChannelName, const std::string &Key)
         return true;
     }
     return false;
-}
+} */
 
 bool Server::IsChannelLimitFull(const std::string &ChannelName)
 {

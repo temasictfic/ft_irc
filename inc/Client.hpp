@@ -21,6 +21,7 @@ public:
     std::string _nick;
     std::string _username;
     std::string _realname;
+    std::string _invitedchan;
     enum RegistrationState _status;
     bool _online;
     Channel *_channel;

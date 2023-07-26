@@ -21,7 +21,7 @@ $(OBJDIR)/%.o: ./src/cmds/%.cpp
 	@$(CC) $(FLAGS) -c -o $@ $<
 
 $(OBJDIR):
-	mkdir -p $(OBJDIR)
+	@mkdir -p $(OBJDIR)
 
 clean:
 	@rm -rf $(OBJ)

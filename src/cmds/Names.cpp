@@ -1,7 +1,5 @@
 #include "../../inc/Server.hpp"
-#include "../../inc/Client.hpp"
-#include "../../inc/Channel.hpp"
-#include "../../inc/Replies.hpp"
+
 //RPL_NAMREPLY (353)
 //RPL_ENDOFNAMES (366)
 

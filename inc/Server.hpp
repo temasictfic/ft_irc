@@ -71,7 +71,7 @@ public:
     bool IsInChannel(class Client &, const std::string &ChannelName);
     // bool IsOperator(Client &client, const std::string& Nick);
     bool HasChannelKey(const std::string &ChannelName);
-    bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
+    //bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
     bool IsChannelLimitFull(const std::string &ChannelName);
     Client &findClient(const std::string &NickName);
     int ParamsSizeControl(std::vector<std::string> params, size_t index, size_t optional);

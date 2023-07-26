@@ -5,10 +5,10 @@
 
 enum Mode
 {
-    Default = 0,
-    InviteOnly = 1,
-    KeyChannel = 2,
-    ProtectedTopic = 4
+    Default = 1,
+    InviteOnly = 2,
+    KeyChannel = 4,
+    ProtectedTopic = 8
 };
 
 class Channel
@@ -19,7 +19,7 @@ private:
     std::vector<class Client*> _banned;
     std::vector<class Client*> _members;
 public:
-    enum Mode _mode;
+    int _mode;
     std::string _name;
     std::string _topic;
     unsigned int _clientLimit;
@@ -49,5 +49,5 @@ public:
 
 };
 
-bool ChangeMode(enum Mode &mode, const std::string &ModeString, std::map<char, enum Mode> modes);
+bool ChangeMode(Client &client, const std::vector<std::string> &ModeString, std::map<char, int> modes);
 
