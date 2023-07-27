@@ -205,6 +205,8 @@ void Server::Serve(fd_set readSet)
             //  Check if the message starts with a command character
             if (message[0] == '/')
                 ProcessCommand(message, *client);
+/*             else if (message[0] == '!')
+                ProcessBot(message, *client); */
             else
                 ProcessChat(message, *client);
         }
