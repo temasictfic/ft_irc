@@ -21,7 +21,7 @@ int fileTransfer(const std::string& command, Client& commander, const std::strin
         std::string fileName = commander._fileinfos[1];
 
         Client& accepted = findClient(commander._fileinfos[0]);
-        sendServerToClient(accepted._nick, "File Transfer Accepted.");
+        sendServerToClient(accepted, "File Transfer Accepted.");
         commander._fileinfos.clear();
         //implement send file logic
         sendFileToClient(accepted, commander, filename); //?
@@ -34,7 +34,7 @@ int fileTransfer(const std::string& command, Client& commander, const std::strin
         if (commander._fileinfos.empty())
             return -1;
         Client& rejected = findClient(commander._fileinfos[0]);
-        sendServerToClient(rejected._nick, "File Transfer Rejected.");
+        sendServerToClient(rejected, "File Transfer Rejected.");
         commander._fileinfos.clear();
     }
 }
