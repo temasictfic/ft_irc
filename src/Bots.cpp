@@ -7,7 +7,7 @@ int fileTransfer(const std::string& command, Client& commander, const std::strin
         if (IsExistClient(receiverName))
         {
             Client& receiver = findClient(receiverName);
-            sendClientToClient(commander, receiver, commander._nick + " wants to send you this file: " + filename + " . If you want to accept '!FILE y' or '!FILE n'.");
+            sendClientToClient(commander, receiver, commander._nick + " wants to send you this file: " + filename + " . If you want to accept '!FILE y/n'.");
             receiver._fileinfos.push_back(commander._nick);
             receiver._fileinfos.push_back(filename);
         }
