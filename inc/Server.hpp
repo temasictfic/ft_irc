@@ -78,7 +78,7 @@ public:
     bool PasswordMatched(const std::string &PasswordOrigin, const std::string &PasswordGiven);
 
     // Send messagges
-    int sendServerToClient(Client &, const std::string &message);
+    int sendServerToClient(Client &reciever, const std::string &message);
     int sendServerToChannel(const std::string &ChannelName, const std::string &message);
     int sendClientToClient(Client &sender, Client &reciever, const std::string &message);
     int sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message);

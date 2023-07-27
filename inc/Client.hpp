@@ -22,6 +22,7 @@ public:
     std::string _username;
     std::string _realname;
     std::string _invitedchan;
+    std::vector<std::string> _fileinfos;
     enum RegistrationState _status;
     bool _online;
     Channel *_channel;
