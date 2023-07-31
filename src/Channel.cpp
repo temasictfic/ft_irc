@@ -8,7 +8,7 @@ Channel::Channel(std::string ChannelName, Client &op)
     _clientLimit = 10;
     _key = "";
     _operator = &op;
-    op._channel = this;
+    op._channel[ChannelName] = *this;
     //_banned = std::vector<class Client*>();
     //_members = std::vector<class Client*>();
     //this->addMembers(op);
@@ -18,11 +18,11 @@ Channel::Channel(){}
 
 Channel::~Channel()
 {
-    _operator->_channel = NULL;
+    //_operator->_channel.at(_name)
 
     _banned.clear();
-    for(std::vector<Client*>::iterator it = _members.begin(); it != _members.end(); it++)
-        (*it)->_channel = NULL;
+    for(std::vector<Client*>::iterator it = _members.begin(); it != _members.end(); )
+            (*it)->_channel.erase(_name);
     _members.clear();
 }
  
@@ -48,14 +48,14 @@ std::vector<class Client*>& Channel::getMembers()
 
 void Channel::addMembers(Client &client)
 {
-    client._channel = this;
+    client._channel.insert(make_pair(_name,this));
    _members.push_back(&client);
 }
 
 void Channel::addBanned(Client &client)
 {
-    client._channel = NULL;
-     _banned.push_back(&client);
+    client._channel.erase(_name);
+    _banned.push_back(&client);
 }
 
 void Channel::removeMembers(Client &client)
@@ -68,7 +68,7 @@ void Channel::removeMembers(Client &client)
             break;
         }
     }
-    client._channel = NULL;
+    client._channel.erase(_name);
 }
 
 void Channel::removeBanned(Client &client)
@@ -101,16 +101,16 @@ bool ChangeMode(Client &client, const std::vector<std::string> &params, std::map
     {
         if (params[1][0] == '+')
         {
-            client._channel->_mode |= modes.at(params[1][1]);
+            client._channel.at(params[0])._mode |= modes.at(params[1][1]);
             if(params[1][1] == 'k' && params.size() == 3)
-                client._channel->setKey(params[2]);
+                client._channel.at(params[0]).setKey(params[2]);
             return true;
         }
         else if (params[1][0] == '-')
         {
-            client._channel->_mode ^= modes.at(params[1][1]);
+            client._channel.at(params[0])._mode ^= modes.at(params[1][1]);
             if(params[1][1] == 'k' && params.size() == 3)
-                client._channel->setKey("");
+                client._channel.at(params[0]).setKey("");
             return true;
         }
     }

@@ -1,9 +1,9 @@
 #include "../inc/Server.hpp"
 
-Client::Client(int clientSocket) : _hostname("unknown"), _nick(""), _username(""), _realname(""), _invitedchan(""), _status(None) , _online(true), _channel(NULL)
+Client::Client(int clientSocket) : _hostname("unknown"), _nick(""), _username(""), _realname(""), _invitedchan(""), _status(None) , _online(true), _channel()
 {
     _socket = clientSocket;
-    _fileinfos = std::vector<std::string>();
+    //_fileinfos = std::vector<std::string>();
 }
 
 /* Client::Client()

@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <algorithm>
 #include "../inc/Client.hpp"
 #include "../inc/Channel.hpp"
 #include "../inc/Replies.hpp"
@@ -48,6 +49,7 @@ public:
     void ProcessChat(const std::string &message, Client *client);
 
     // Commands
+    void Cap(class Client &, std::vector<std::string>);
     void Pass(class Client &, std::vector<std::string>);
     void Nick(class Client &, std::vector<std::string>);
     void User(class Client &, std::vector<std::string>);

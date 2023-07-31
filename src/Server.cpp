@@ -24,6 +24,7 @@ Server::Server(const std::string &Port, const std::string &Password)
     _channels = std::map<std::string, class Channel*>();
     _clients =  std::vector<class Client*>();
 
+    cmds["CAP"] = &Server::Cap;
     cmds["PASS"] = &Server::Pass;
     cmds["NICK"] = &Server::Nick;
     cmds["USER"] = &Server::User;
@@ -201,14 +202,11 @@ void Server::Serve(fd_set readSet)
             // check message length < 1024 including /r/n
             //  Process received data and handle IRC commands
             std::string message(buffer, bytesRead);
-            std::cout << "Received data from client: " << message << "\n";
+            std::cout << "Received data from client: $" << message << "$";
             //  Check if the message starts with a command character
-            if (message[0] == '/')
-                ProcessCommand(message, *client);
-/*             else if (message[0] == '!')
-                ProcessBot(message, *client); */
-            else
-                ProcessChat(message, *client);
+            ProcessCommand(message, *client);
+/*          else if (message[0] == '!')
+            ProcessBot(message, *client); */
         }
         ++client;
     }
@@ -216,23 +214,28 @@ void Server::Serve(fd_set readSet)
 
 void Server::ProcessCommand(std::string &message, Client *client)
 {
-    message.resize(message.size() - 1);
-    // std::cout << message << "$";
-    size_t spacePos = message.find(' ');
-    std::string command = message.substr(1, spacePos - 1);
-    if (cmds.find(command) != cmds.end())
-        (this->*cmds.at(command))(*client, split(message.substr(spacePos + 1), " "));
+    std::vector<std::string> str = split(message,"\r\n");
+    for(std::vector<std::string>::iterator it = str.begin(); it != str.end(); it++)
+    {
+        //std::cout <<"split: " << *it << "\n";
+        size_t spacePos = (it->find(' ')  != std::string::npos) ? it->find(' ') : it->size() -1;
+        std::string command = it->substr(0, spacePos);
+        //std::cout <<"cmd: " << command << "\n";
+        if (cmds.find(command) != cmds.end())
+            (this->*cmds.at(command))(*client, split(it->substr(spacePos + 1), " "));
+    }
+    //sendServerToClient(*client, message); //rawMessage
 }
 
-void Server::ProcessChat(const std::string &message, Client *client)
+/* void Server::ProcessChat(const std::string &message, Client *client)
 {
     if (client->_channel)
         sendClientToChannel(*client, client->_channel->_name, message);
-}
+} */
 
 int Server::sendServerToClient(Client &reciever, const std::string &message)
 {
-    std::string formattedmessage = message + "\n";
+    std::string formattedmessage = message + "\r\n";
     if (send(reciever.getSocketFd(), formattedmessage.c_str(), formattedmessage.length(), 0) == -1)
     {
         std::cerr << "Failed to send chat message between "
@@ -245,7 +248,7 @@ int Server::sendServerToClient(Client &reciever, const std::string &message)
 
 int Server::sendServerToChannel(const std::string &ChannelName, const std::string &message)
 {
-    std::string formattedMessage = ChannelName + ": " + message + "\n";
+    std::string formattedMessage = ChannelName + ": " + message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getMembers().end();
     for (; client != end; client++)
@@ -261,7 +264,7 @@ int Server::sendServerToChannel(const std::string &ChannelName, const std::strin
 
 int Server::sendClientToClient(Client &sender, Client &reciever, const std::string &message)
 {
-    std::string formattedMessage = sender._nick + ": " + message + "\n";
+    std::string formattedMessage = sender._nick + ": " + message + "\r\n";
     if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
     {
         std::cerr << "Failed to send chat message between " << sender._nick << " -> " << reciever._nick << "\n";
@@ -271,9 +274,9 @@ int Server::sendClientToClient(Client &sender, Client &reciever, const std::stri
 }
 int Server::sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message)
 {
-    if (!sender._channel)
+    if (sender._channel.at(ChannelName)._name.empty())
         return 0;
-    std::string formattedMessage = sender._nick + ": " + message + "\n";
+    std::string formattedMessage = sender._nick + ": " + message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getMembers().end();
     for (; client != end; client++)

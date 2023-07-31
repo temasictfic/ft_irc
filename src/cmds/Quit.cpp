@@ -11,10 +11,10 @@ void Server::Quit(Client &client, std::vector<std::string> params)
     }
     (void)params;
     // apart from channel.
-    if (client._channel)
+    if (client._channel.find(params[0]) != client._channel.end())
     {
         std::vector<std::string> par;
-        par.push_back(client._channel->_name);
+        par.push_back(client._channel.at(params[0])._name);
         Part(client, par);
     }
     // make client offline.

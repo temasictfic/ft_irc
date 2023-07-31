@@ -15,19 +15,19 @@ void Server::Invite(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {
-        sendServerToClient(client,ERR_NOTREGISTERED());
+        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
     int err = ParamsSizeControl(params, 2, 0);
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/INVITE")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("/INVITE")));
         else if (err == 1)
             sendServerToClient(client, ERR_CUSTOM(std::string("/INVITE Excessive argument is given")));
         return;
     }
-    if (IsInChannel(client,params[0]) && IsExistClient(params[1], 0) && IsExistChannel(params[0]))
+    if (IsExistClient(params[1], 0) && IsExistChannel(params[0]) && IsInChannel(client,params[0]))
     {
         Client& invited = findClient(params[1]);
         invited._invitedchan = params[0];
@@ -53,10 +53,10 @@ void Server::Invite(Client &client, std::vector<std::string> params)
     else
     {
         if(!IsExistClient(params[1],0))
-            sendServerToClient(client, ERR_NOSUCHNICK(params[1]));
+            sendServerToClient(client, ERR_NOSUCHNICK(client._nick, params[1]));
         else if(!IsExistChannel(params[0]))
-            sendServerToClient(client, ERR_NOSUCHCHANNEL(params[0]));
+            sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));
         else if(!IsInChannel(client,params[0]))
-            sendServerToClient(client,  ERR_NOTONCHANNEL(params[0]));
+            sendServerToClient(client,  ERR_NOTONCHANNEL(client._nick, params[0]));
     }
 }

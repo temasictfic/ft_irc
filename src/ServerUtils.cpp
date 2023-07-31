@@ -36,10 +36,7 @@ bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // c
 
 bool Server::IsInChannel(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
 {
-    if (client._channel)
-        return client._channel->_name == ChannelName;
-    else
-        return false;
+    return (client._channel.find(ChannelName) != client._channel.end()) ? true : false;
 }
 
 /* bool Server::IsOperator(Client &client, const std::string& Nick)

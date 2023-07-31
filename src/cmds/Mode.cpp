@@ -45,12 +45,12 @@ void Server::Mode(Client &client, std::vector<std::string> params)
             sendServerToClient(client, msg);
         }
         else if (params[1].size() == 2)
-            ChangeMode(client, params, modes) ? sendServerToChannel(client._channel->_name,"Mode successfully changed as " + params[1]) : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
+            ChangeMode(client, params, modes) ? sendServerToChannel(client._channel.at(params[0])._name,"Mode successfully changed as " + params[1]) : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
         else
             sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
     }
     else if (IsExistChannel(params[0]))
-       sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._channel->_name));
+       sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._channel.at(params[0])._name));
     else
         sendServerToClient(client, ERR_NOSUCHCHANNEL(params[0]));
 }

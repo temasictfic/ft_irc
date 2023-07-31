@@ -4,9 +4,11 @@
 //ERR_ALREADYREGISTERED()
 //RPL_WELCOME()
 
+
+//USER Bit 0 * :realname
 void Server::User(Client &client, std::vector<std::string > params)
 {
-    if (client._status < 2)
+/*     if (client._status < 2)
     {
         sendServerToClient(client, ERR_NOTREGISTERED());
         return;
@@ -19,7 +21,7 @@ void Server::User(Client &client, std::vector<std::string > params)
         else if (err == 1)
             sendServerToClient(client, ERR_CUSTOM(std::string("/USER Excessive argument is given")));
         return;
-    }
+    } */
     switch (client._status)
     {
     case NickRegistered:
@@ -28,7 +30,7 @@ void Server::User(Client &client, std::vector<std::string > params)
             client._realname = params[1];
         client._status = UsernameRegistered;
         std::cout << "Username assigned" << "\n";
-        sendServerToClient(client, RPL_WELCOME(client._nick));
+        sendServerToClient(client, RPL_ISUPPORT(client._nick));
         break;
     case UsernameRegistered:
         client._username = params[0];

@@ -35,6 +35,7 @@ void Server::Nick(Client &client, std::vector<std::string> params)
     default:
         std::string old_nick = client._nick;
         client._nick = ToLowercase(params[0]);
-        sendClientToChannel(client, client._channel->_name, old_nick + ": changed nickname to " + client._nick);
+        std::cout << "Nick changed" << "\n";
+        //sendClientToChannel(client, client._channel->_name, old_nick + ": changed nickname to " + client._nick);
     }
 }
