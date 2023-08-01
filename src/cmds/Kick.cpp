@@ -11,16 +11,16 @@ void Server::Kick(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {
-        sendServerToClient(client,ERR_NOTREGISTERED());
+        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
     int err = ParamsSizeControl(params, 2, 0);
      if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/KICK")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("KICK")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/KICK Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("KICK"), std::string("Excessive argument is given")));
         return;
     }
     if(IsExistChannel(params[0]) && IsExistClient(params[1],0) && IsInChannel(client, params[0]) && client._channel.at(params[0]).getOperator()->_nick == client._nick)
@@ -33,15 +33,15 @@ void Server::Kick(Client &client, std::vector<std::string> params)
             client._channel.at(params[0]).addBanned(kicked); //Banlama işi mode ta yapılabilir.
         }
         else
-            sendServerToClient(client, ERR_USERNOTINCHANNEL(params[1], params[0]));
+            sendServerToClient(client, ERR_USERNOTINCHANNEL(client._nick, params[1], params[0]));
     }
     else
     {
         if (!IsExistChannel(params[0]))
-            sendServerToClient(client, ERR_NOSUCHCHANNEL(params[0]));
+            sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));
         else if (!IsInChannel(client, params[0]))
-            sendServerToClient(client, ERR_NOTONCHANNEL(params[0]));
+            sendServerToClient(client, ERR_NOTONCHANNEL(client._nick, params[0]));
         else
-            sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._channel.at(params[0])._name));
+            sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._nick, client._channel.at(params[0])._name));
     }
 }

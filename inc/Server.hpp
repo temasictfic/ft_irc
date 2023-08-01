@@ -71,6 +71,7 @@ public:
     bool IsExistChannel(const std::string &ChannelName);
     bool IsBannedClient(class Client &, const std::string &ChannelName);
     bool IsInChannel(class Client &, const std::string &ChannelName);
+    enum Prefix PrefixControl(std::string str);
     // bool IsOperator(Client &client, const std::string& Nick);
     bool HasChannelKey(const std::string &ChannelName);
     //bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
@@ -82,7 +83,7 @@ public:
     // Send messagges
     int sendServerToClient(Client &reciever, const std::string &message);
     int sendServerToChannel(const std::string &ChannelName, const std::string &message);
-    int sendClientToClient(Client &sender, Client &reciever, const std::string &message);
+    //int sendClientToClient(Client &sender, Client &reciever, const std::string &message);
     int sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message);
 
     const std::string &getPassword() const;

@@ -22,9 +22,9 @@ void Server::Invite(Client &client, std::vector<std::string> params)
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("/INVITE")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("INVITE")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/INVITE Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("INVITE"), std::string("Excessive argument is given")));
         return;
     }
     if (IsExistClient(params[1], 0) && IsExistChannel(params[0]) && IsInChannel(client,params[0]))
@@ -33,7 +33,7 @@ void Server::Invite(Client &client, std::vector<std::string> params)
         invited._invitedchan = params[0];
         if (IsInChannel(invited, params[0]))
         {
-            sendServerToClient(client, ERR_USERONCHANNEL(invited._nick, params[0]));
+            sendServerToClient(client, ERR_USERONCHANNEL(client._nick, invited._nick, params[0]));
             return;
         }
         std::vector<std::string> channel;
@@ -41,14 +41,18 @@ void Server::Invite(Client &client, std::vector<std::string> params)
         if (_channels.at(params[0])->_mode == InviteOnly && _channels.at(params[0])->getOperator()->_nick == client._nick)  
             Join(invited, channel);
         else if (_channels.at(params[0])->_mode == InviteOnly)
-            sendServerToClient(client, ERR_CHANOPRIVSNEEDED(params[0]));
+            sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._nick, params[0]));
         else if(IsBannedClient(invited,params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick)
         {
             _channels.at(params[0])->removeBanned(invited);
+            sendServerToClient(client, RPL_INVITING(client._nick,invited._nick,params[0]));
             Join(invited, channel);
         }
         else
+        {
+            sendServerToClient(client, RPL_INVITING(client._nick,invited._nick,params[0]));//joine implimente et daha mantıklı
             Join(invited, channel);
+        }
     }
     else
     {

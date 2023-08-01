@@ -6,38 +6,46 @@
 
 
 //USER Bit 0 * :realname
-void Server::User(Client &client, std::vector<std::string > params)
+void Server::User(Client &client, std::vector<std::string>params)
 {
-/*     if (client._status < 2)
+    if (client._status < 2)
     {
-        sendServerToClient(client, ERR_NOTREGISTERED());
+        sendServerToClient(client, ERR_NOTREGISTERED(client._nick));
         return;
     }
-    int err = ParamsSizeControl(params, 1, 1);
+    int err = ParamsSizeControl(params, 3, 2);
     if ( err != 0)  
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/USER")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("USER")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/USER Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("USER"), std::string("Excessive argument is given")));
         return;
-    } */
+    }
+    size_t count = params.size();
     switch (client._status)
     {
     case NickRegistered:
         client._username = params[0];
-        if(params.size() > 1)
-            client._realname = params[1];
+        if(count > 3)
+        {
+            client._realname = params[3].substr(1);
+            for (size_t i = 0; i < count - 4; i++)
+                client._realname += " " + params[i];
+        }
         client._status = UsernameRegistered;
         std::cout << "Username assigned" << "\n";
-        sendServerToClient(client, RPL_ISUPPORT(client._nick));
         break;
     case UsernameRegistered:
         client._username = params[0];
-        if(params.size() > 1)
-            client._realname = params[1];
+        if(count > 3)
+        {
+            client._realname = params[3].substr(1);
+            for (size_t i = 0; i < count - 4; i++)
+                client._realname += " " + params[i];
+        }
+        std::cout << "Username changed" << "\n";
         break;
     default:
-        break;
     }
 }

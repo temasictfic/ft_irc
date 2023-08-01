@@ -6,7 +6,7 @@ void Server::Quit(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {
-        sendServerToClient(client,ERR_NOTREGISTERED());
+        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
     (void)params;

@@ -9,9 +9,9 @@ void Server::Pass(Client &client, std::vector<std::string> params)
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/PASS")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("PASS")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/PASS Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("PASS"), std::string("Excessive argument is given")));
         return;
     }
     switch (client._status)
@@ -23,9 +23,9 @@ void Server::Pass(Client &client, std::vector<std::string> params)
             std::cout << "Pass assigned" << "\n";
         }
         else
-            sendServerToClient(client, ERR_PASSWDMISMATCH());
+            sendServerToClient(client, ERR_PASSWDMISMATCH(client._nick));
         break;
     default:
-        sendServerToClient(client, ERR_ALREADYREGISTERED());
+        sendServerToClient(client, ERR_ALREADYREGISTERED(client._nick));
     }
 }

@@ -25,14 +25,14 @@ bool ValidModeChars(const std::string &ModeString)
     int count = 0;
     if (ModeString[0] == '+' || ModeString[0] == '-')
     {
-        std::string modes = "ikt";
-        for (size_t i = 0; i < 3; i++)
+        std::string modes = "iklto";
+        for (size_t i = 0; i < 5; i++)
         {
             if (ModeString[1] == modes[i])
                 count++;
         }
     }
-    return count;
+    return count != 0;
 }
 
 bool InvalidPassword(const std::string &Password)

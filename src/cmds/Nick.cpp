@@ -3,20 +3,28 @@
 //ERR_NONICKNAMEGIVEN()
 //ERR_ERRONEUSNICKNAME(Nick)
 //ERR_NICKNAMEINUSE (Nick)
+
+
+/*  NICK Wiz                  ; Requesting the new nick "Wiz".
+Message Examples:
+
+:WiZ NICK Kilroy          ; WiZ changed his nickname to Kilroy. */
+
+//(:oldnick NICK newnick) sendServertoChannel(source)
 void Server::Nick(Client &client, std::vector<std::string> params)
 {
     if (client._status == None)
     {
-        sendServerToClient(client, ERR_NOTREGISTERED());
+        sendServerToClient(client, ERR_NOTREGISTERED(client._nick));
         return;
     }
     int err = ParamsSizeControl(params, 1, 0);
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/NICK")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("NICK")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/NICK Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("NICK"), std::string("Excessive argument is given")));
         return;
     }
     if (InvalidLetter(params[0]) || InvalidPrefix(params[0]))
@@ -27,8 +35,8 @@ void Server::Nick(Client &client, std::vector<std::string> params)
     {
     case PassRegistered:
         client._nick = ToLowercase(params[0]);
-        client._username = ToLowercase(params[0]);
-        client._realname = ToLowercase(params[0]);
+        client._username = client._nick;
+        client._realname = client._nick;
         client._status = NickRegistered;
         std::cout << "Nick assigned" << "\n";
         break;
@@ -36,6 +44,9 @@ void Server::Nick(Client &client, std::vector<std::string> params)
         std::string old_nick = client._nick;
         client._nick = ToLowercase(params[0]);
         std::cout << "Nick changed" << "\n";
-        //sendClientToChannel(client, client._channel->_name, old_nick + ": changed nickname to " + client._nick);
+        for (std::map<std::string, Channel&>::iterator chan = client._channel.begin(); chan != client._channel.end(); chan++)
+        {
+            sendClientToChannel(client, chan->first, ":" + old_nick + " NICK " + client._nick);
+        }
     }
 }

@@ -16,7 +16,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {
-        sendServerToClient(client,ERR_NOTREGISTERED());
+        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
     std::map<char, int> modes;
@@ -24,14 +24,18 @@ void Server::Mode(Client &client, std::vector<std::string> params)
     modes['i'] = InviteOnly;
     modes['k'] = KeyChannel;
     modes['t'] = ProtectedTopic;
+    //modes['b'] = Ban;
+    //modes['l'] = ChanneLimit;
+    //modes['o'] = ChanOp;
+
 
     int err = ParamsSizeControl(params, 1, 2);
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/MODE")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("MODE")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/MODE Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("MODE"), std::string("Excessive argument is given")));
         return;
     }
     if (IsExistChannel(params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick)
@@ -45,12 +49,12 @@ void Server::Mode(Client &client, std::vector<std::string> params)
             sendServerToClient(client, msg);
         }
         else if (params[1].size() == 2)
-            ChangeMode(client, params, modes) ? sendServerToChannel(client._channel.at(params[0])._name,"Mode successfully changed as " + params[1]) : sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
+            ChangeMode(client, params, modes) ? sendServerToChannel(client._channel.at(params[0])._name,"Mode successfully changed as " + params[1]) : sendServerToClient(client, ERR_UNKNOWNMODE(client._nick, params[1]));
         else
-            sendServerToClient(client,ERR_UNKNOWNMODE(params[1]));
+            sendServerToClient(client, ERR_UNKNOWNMODE(client._nick, params[1]));
     }
     else if (IsExistChannel(params[0]))
-       sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._channel.at(params[0])._name));
+       sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._nick, client._channel.at(params[0])._name));
     else
-        sendServerToClient(client, ERR_NOSUCHCHANNEL(params[0]));
+        sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));
 }

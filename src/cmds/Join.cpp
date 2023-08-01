@@ -15,16 +15,16 @@ void Server::Join(Client &client,std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {
-        sendServerToClient(client,ERR_NOTREGISTERED());
+        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
     int err = ParamsSizeControl(params, 1, 1);
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/JOIN")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("JOIN")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/JOIN Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("JOIN"),std::string("Excessive argument is given")));
         return;
     }
     if (IsExistChannel(params[0]))
@@ -32,15 +32,15 @@ void Server::Join(Client &client,std::vector<std::string> params)
         if (IsInChannel(client, params[0])) // 2 kere join farklı channel cöz.
             sendServerToClient(client, ERR_USERONCHANNEL(client._nick, params[0]));
         else if (IsBannedClient(client, params[0]))
-            sendServerToClient(client,ERR_BANNEDFROMCHAN(params[0]));
+            sendServerToClient(client,ERR_BANNEDFROMCHAN(client._nick, params[0]));
         else if (IsChannelLimitFull(params[0]))
-            sendServerToClient(client,ERR_CHANNELISFULL(params[0]));
+            sendServerToClient(client,ERR_CHANNELISFULL(client._nick, params[0]));
         else if (_channels.at(params[0])->_mode & InviteOnly && client._invitedchan != params[0])
-            sendServerToClient(client,ERR_INVITEONLYCHAN(params[0]));
+            sendServerToClient(client,ERR_INVITEONLYCHAN(client._nick, params[0]));
         else if (params.size() < 2 && HasChannelKey(params[0]))
-            sendServerToClient(client,ERR_BADCHANNELKEY(params[0]));
+            sendServerToClient(client,ERR_BADCHANNELKEY(client._nick, params[0]));
         else if (params.size() == 2 && !PasswordMatched(_channels.at(params[0])->getKey(), params[1]))
-            sendServerToClient(client,ERR_BADCHANNELKEY(params[0]));
+            sendServerToClient(client,ERR_BADCHANNELKEY(client._nick, params[0]));
         else
         {
             client._invitedchan = "";
@@ -52,7 +52,7 @@ void Server::Join(Client &client,std::vector<std::string> params)
     else
     {
         if (InvalidLetter(params[0]) || params[0][0] != '#')
-            sendServerToClient(client, ERR_CUSTOM(std::string("Forbidden letter in use as Channel name or didn't use #.\n")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("JOIN"), std::string("Forbidden letter in use as Channel name or didn't use #.\n")));
         else
         {
             Channel* newish = new Channel(params[0],client);

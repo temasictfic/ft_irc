@@ -9,7 +9,7 @@ void Server::List(class Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
     {
-        sendServerToClient(client,ERR_NOTREGISTERED());
+        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
     if(params.size() == 1)
@@ -27,9 +27,9 @@ void Server::List(class Client &client, std::vector<std::string> params)
     if (err != 0)
     {
         if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(std::string("/LIST")));
+            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("LIST")));
         else if (err == 1)
-            sendServerToClient(client, ERR_CUSTOM(std::string("/LIST Excessive argument is given")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("LIST"), std::string("Excessive argument is given")));
         return;
     }
     if (IsExistChannel(params[0]))
@@ -39,5 +39,5 @@ void Server::List(class Client &client, std::vector<std::string> params)
         sendServerToClient(client,"channelname: " + params[0] + " limit: " + limit.str() + ", operator: @" +  _channels.at(params[0])->getOperator()->_nick + ", topic: " +  _channels.at(params[0])->_topic + "\n");
     }
     else
-       sendServerToClient(client, ERR_NOSUCHCHANNEL(params[0]));
+       sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));
 }

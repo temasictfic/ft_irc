@@ -233,6 +233,10 @@ void Server::ProcessCommand(std::string &message, Client *client)
         sendClientToChannel(*client, client->_channel->_name, message);
 } */
 
+
+
+
+
 int Server::sendServerToClient(Client &reciever, const std::string &message)
 {
     std::string formattedmessage = message + "\r\n";
@@ -248,7 +252,7 @@ int Server::sendServerToClient(Client &reciever, const std::string &message)
 
 int Server::sendServerToChannel(const std::string &ChannelName, const std::string &message)
 {
-    std::string formattedMessage = ChannelName + ": " + message + "\r\n";
+    std::string formattedMessage = message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getMembers().end();
     for (; client != end; client++)
@@ -262,21 +266,22 @@ int Server::sendServerToChannel(const std::string &ChannelName, const std::strin
     return 0;
 }
 
-int Server::sendClientToClient(Client &sender, Client &reciever, const std::string &message)
+/* int Server::sendClientToClient(Client &sender, Client &reciever, const std::string &message)
 {
-    std::string formattedMessage = sender._nick + ": " + message + "\r\n";
+    std::string formattedMessage = message + "\r\n";
     if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
     {
         std::cerr << "Failed to send chat message between " << sender._nick << " -> " << reciever._nick << "\n";
         return -1;
     }
     return 0;
-}
+} */
+
 int Server::sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message)
 {
     if (sender._channel.at(ChannelName)._name.empty())
         return 0;
-    std::string formattedMessage = sender._nick + ": " + message + "\r\n";
+    std::string formattedMessage = message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getMembers().end();
     for (; client != end; client++)

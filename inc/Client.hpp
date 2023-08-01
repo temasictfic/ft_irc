@@ -25,7 +25,7 @@ public:
     //std::vector<std::string> _fileinfos;
     enum RegistrationState _status;
     bool _online;
-    std::map<std::string,Channel> _channel;
+    std::map<std::string, Channel&> _channel;
 
     Client(int clientSocket);
     //Client();

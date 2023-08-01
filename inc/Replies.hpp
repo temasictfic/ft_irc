@@ -19,7 +19,7 @@
 
 #define RPL_TOPIC(Nick, ChanName, Topic) ":ircserv 332 " + Nick + "@localhost " + ChanName + " :" + Topic
 
-#define RPL_TOPICWHOTIME(Nick, ChanName, TopicSetterNick, TimeStamp) ":ircserv 333 " + Nick + "@localhost " + ChanName + " " + TopicSetterNick + " " + TimeStamp
+//#define RPL_TOPICWHOTIME(Nick, ChanName, TopicSetterNick, TimeStamp) ":ircserv 333 " + Nick + "@localhost " + ChanName + " " + TopicSetterNick + " " + TimeStamp
 
 //RPL_INVITELIST (336) "<client> <channel>"
 
@@ -38,7 +38,7 @@
 //#define RPL_WHOISMODES(Nicki, Modes) ":ircserv 379 " + Nick + "@localhost :is using modes " + Modes 
 
 //----ERRORS
-#define ERR__UNKNOWNERROR(Nick, Command, Message) ":ircserv 400 " + Nick + "@localhost " + Command + " :" + Message
+#define ERR_UNKNOWNERROR(Nick, Command, Message) ":ircserv 400 " + Nick + "@localhost " + Command + " :" + Message
 
 #define ERR_NOSUCHNICK(Nick, Nickname) ":ircserv 401 " + Nick + "@localhost " + Nickname + " :No such nick"
 
@@ -62,11 +62,11 @@
 
 #define ERR_NICKNAMEINUSE(Nick) ":ircserv 433 " + Nick + "@localhost " + Nick + " :Nickname is already in use"
 
-#define ERR_USERNOTINCHANNEL(Nick, ChanName) ":ircserv 441 " + Nick + "@localhost " + Nick + " " + ChanName + " :They aren't on that channel"
+#define ERR_USERNOTINCHANNEL(Nick, Client, ChanName) ":ircserv 441 " + Nick + "@localhost " + Client + " " + ChanName + " :They aren't on that channel"
 
 #define ERR_NOTONCHANNEL(Nick, ChanName) ":ircserv 442 " + Nick + "@localhost " + Nick + " " + ChanName + " :You're not on that channel"
 
-#define ERR_USERONCHANNEL(Nick, ChanName) ":ircserv 443 " + Nick + "@localhost " + Nick + " " + ChanName + " :is already on channel"
+#define ERR_USERONCHANNEL(Nick, Client, ChanName) ":ircserv 443 " + Nick + "@localhost " + Client + " " + ChanName + " :is already on channel"
 
 #define ERR_NOTREGISTERED(Nick) ":ircserv 451 " + Nick + "@localhost " + ":You have not registered"
 
@@ -80,7 +80,7 @@
 
 #define ERR_CHANNELISFULL(Nick, ChanName) ":ircserv 471 " + Nick + "@localhost " + ChanName + " :Cannot join channel (+l)"
 
-#define ERR_UNKNOWNMODE(Nick, Modechar) ":ircserv 472 " + Nick + "@localhost " + ModeChar + " :is unknown mode char to me"
+#define ERR_UNKNOWNMODE(Nick, ModeChar) ":ircserv 472 " + Nick + "@localhost " + ModeChar + " :is unknown mode char to me"
 
 #define ERR_INVITEONLYCHAN(Nick, ChanName) ":ircserv 473 " + Nick + "@localhost " + ChanName + " :Cannot join channel (+i)"
 
