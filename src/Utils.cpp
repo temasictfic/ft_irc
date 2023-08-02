@@ -44,7 +44,7 @@ bool InvalidPassword(const std::string &Password)
     }
     for (size_t i = 0; i < Password.size() - 1; i++)
     {
-        if (!isalpha(Password[i]))
+        if (!isalnum(Password[i]))
         {
             // password invalid char hatası?
             return true;
@@ -58,7 +58,7 @@ bool InvalidLetter(const std::string &Nick)
     if(Nick.empty())
         return false;
     std::string forbid = " .,*?!@";
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < 7; i++)
     {
         if (Nick.find(forbid[i]) != std::string::npos)
             return true;
@@ -70,7 +70,7 @@ bool InvalidPrefix(const std::string &Nick)
     if(Nick.empty())
         return false;
     std::string prefixforbid = "$:#&/";
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         if (Nick[0] == prefixforbid[i] || isdigit(Nick[0]))
             return true;

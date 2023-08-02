@@ -266,6 +266,8 @@ int Server::sendServerToChannel(const std::string &ChannelName, const std::strin
     return 0;
 }
 
+
+
 /* int Server::sendClientToClient(Client &sender, Client &reciever, const std::string &message)
 {
     std::string formattedMessage = message + "\r\n";
@@ -279,7 +281,7 @@ int Server::sendServerToChannel(const std::string &ChannelName, const std::strin
 
 int Server::sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message)
 {
-    if (sender._channel.at(ChannelName)._name.empty())
+    if (sender._channel.empty())
         return 0;
     std::string formattedMessage = message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();

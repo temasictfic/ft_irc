@@ -29,7 +29,7 @@ void Server::Nick(Client &client, std::vector<std::string> params)
     }
     if (InvalidLetter(params[0]) || InvalidPrefix(params[0]))
         sendServerToClient(client, ERR_ERRONEUSNICKNAME(params[0]));
-    else if (IsExistClient(params[0], 0))
+    else if (IsExistClient(params[0]))
         sendServerToClient(client, ERR_NICKNAMEINUSE(params[0]));
     switch (client._status)
     {

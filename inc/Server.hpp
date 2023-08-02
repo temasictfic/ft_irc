@@ -25,6 +25,13 @@
 const int MAX_CLIENTS = 10; // Maximum number of clients to handle
 const int BUFFER_SIZE = 1024;
 
+ enum Prefix
+ {
+    PrefixClient,
+    PrefixChannel,
+    PrefixChannelOp,
+ };
+
 class Server
 {
 private:
@@ -67,7 +74,7 @@ public:
     void List(class Client &, std::vector<std::string>);
 
     // ServerUtils.cpp
-    bool IsExistClient(const std::string &ClientName, const int flag);
+    bool IsExistClient(const std::string &Nick);
     bool IsExistChannel(const std::string &ChannelName);
     bool IsBannedClient(class Client &, const std::string &ChannelName);
     bool IsInChannel(class Client &, const std::string &ChannelName);

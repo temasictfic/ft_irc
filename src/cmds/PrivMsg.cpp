@@ -18,24 +18,7 @@
  // banlı ise or channelda değilse ERR_CANNOTSENDTOCHAN 
 
  //PRIVMSG @#wez
- enum Prefix
- {
-    PrefixClient,
-    PrefixChannel,
-    PrefixChannelOp,
- };
  
-enum Prefix Server::PrefixControl(std::string str)
-{
-    std::string message;
-    enum Prefix pre = PrefixClient;
-    if(!str.empty() && (str[0] == '@') && str[1] == '#')
-        pre = PrefixChannelOp;
-    else if(!str.empty() && str[0] == '#')
-        pre = PrefixChannel;
-    return pre;
-}
-
 void Server::PrivMsg(class Client &client, std::vector<std::string > params)
 {
     if(client._status != UsernameRegistered)
@@ -62,17 +45,20 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
     switch (pre)
     {
     case PrefixClient:
-        if(IsExistClient(params[0],0))
+        if(IsExistClient(params[0]))
         {
             Client& toClient = findClient(params[0]);
-            sendServerToClient(toClient, ":" + client._nick + " PRIVMSG " + toClient._nick + " :" + message);
+            sendServerToClient(toClient, PRIVMSG(client._nick, toClient._nick, message));
         }
         else
             sendServerToClient(client,ERR_NOSUCHNICK(client._nick, params[0]));
         break;
     case PrefixChannelOp:
         if (IsExistChannel(params[1].substr(1)) && !IsBannedClient(client,params[0]))
-            sendServerToClient(*_channels.at(params[1].substr(1))->getOperator(), ":" + client._nick + " PRIVMSG " + params[1].substr(1) + " :" + message);
+        {
+            Client& op = *_channels.at(params[1].substr(1))->getOperator();
+            sendServerToClient(op, PRIVMSG(client._nick, op._nick, message));
+        }
         else if(IsBannedClient(client,params[1].substr(1)))
             sendServerToClient(client,ERR_CANNOTSENDTOCHAN(client._nick,params[1].substr(1)));
         else
@@ -80,7 +66,7 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
         break;
     case PrefixChannel:
         if(IsExistChannel(params[0]) && IsInChannel(client,params[0]) && !IsBannedClient(client,params[0]))
-            sendClientToChannel(client,params[0], ":" + client._nick + " PRIVMSG " + params[0] + " :" + message);
+            sendClientToChannel(client,params[0], PRIVMSG(client._nick, params[0], message));
         else if(!IsInChannel(client,params[0]) || IsBannedClient(client,params[0]))
             sendServerToClient(client,ERR_CANNOTSENDTOCHAN(client._nick,params[0]));
         else

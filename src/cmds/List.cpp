@@ -14,13 +14,14 @@ void Server::List(class Client &client, std::vector<std::string> params)
     }
     if(params.size() == 1)
     {
-        sendServerToClient(client, "List of Channels: ");
+        std::ostringstream count;
         for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
         {
-            std::ostringstream limit;
-            limit << it->second->_clientLimit;
-            sendServerToClient(client,"channelname: " + it->first + ", limit: " + limit.str() + ", operator: @" + it->second->getOperator()->_nick + ", topic: " + it->second->_topic);
+            count << it->second->getMembers().size();
+            sendServerToClient(client, RPL_LIST(client._nick, params[0], count.str(), it->second->_topic));
+            count.clear();
         }
+        sendServerToClient(client, RPL_LISTEND(client._nick));
         return ;
     }
     int err = ParamsSizeControl(params, 0, 1);
@@ -34,9 +35,10 @@ void Server::List(class Client &client, std::vector<std::string> params)
     }
     if (IsExistChannel(params[0]))
     {
-        std::ostringstream limit;
-        limit << _channels.at(params[0])->_clientLimit;
-        sendServerToClient(client,"channelname: " + params[0] + " limit: " + limit.str() + ", operator: @" +  _channels.at(params[0])->getOperator()->_nick + ", topic: " +  _channels.at(params[0])->_topic + "\n");
+        std::ostringstream count;
+        count << _channels.at(params[0])->getMembers().size();
+        sendServerToClient(client, RPL_LIST(client._nick, params[0], count.str(), _channels.at(params[0])->_topic));
+        sendServerToClient(client, RPL_LISTEND(client._nick));
     }
     else
        sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));

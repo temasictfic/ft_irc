@@ -1,15 +1,10 @@
 #include "../inc/Server.hpp"
 
-bool Server::IsExistClient(const std::string &ClientName, const int flag)
+bool Server::IsExistClient(const std::string &ClientName)
 {
     for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients.end(); it++)
     {
-        if (!flag)
-        {
-            if ((*it)->_nick == ClientName)
-                return true;
-        }
-        else if ((*it)->_username == ClientName)
+        if ((*it)->_nick == ClientName)
             return true;
     }
     return false;
@@ -88,6 +83,16 @@ int Server::ParamsSizeControl(std::vector<std::string> params, size_t necessary,
             return -1;
     }
     return 0;
+}
+
+enum Prefix Server::PrefixControl(std::string str)
+{
+    enum Prefix pre = PrefixClient;
+    if(!str.empty() && (str[0] == '@') && str[1] == '#')
+        pre = PrefixChannelOp;
+    else if(!str.empty() && str[0] == '#')
+        pre = PrefixChannel;
+    return pre;
 }
 
 bool Server::PasswordMatched(const std::string& PasswordOrigin, const std::string& PasswordGiven)

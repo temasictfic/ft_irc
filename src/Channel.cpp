@@ -4,8 +4,8 @@ Channel::Channel(std::string ChannelName, Client &op)
 {
     _name = ChannelName;
     _topic = "";
-    _mode = Default;
-    _clientLimit = 10;
+    _mode = ProtectedTopic;
+    _clientLimit = 16;
     _key = "";
     _operator = &op;
     op._channel[ChannelName] = *this;
@@ -18,12 +18,7 @@ Channel::Channel(){}
 
 Channel::~Channel()
 {
-    //_operator->_channel.at(_name)
-
-    _banned.clear();
-    for(std::vector<Client*>::iterator it = _members.begin(); it != _members.end(); )
-            (*it)->_channel.erase(_name);
-    _members.clear();
+    delete this;
 }
  
 const std::string &Channel::getKey() const
@@ -93,24 +88,74 @@ void Channel::setOperator(Client *client)
     _operator = client;
 }
 
-bool ChangeMode(Client &client, const std::vector<std::string> &params, std::map<char,int> modes)
+bool Channel::ChangeModeTwoParams(Client &client, const std::string& ModeString, std::map<char,int>& modes)
 {
-    if(params.size() == 3 && params[1][1] != 'k')
-            return false;
-    if (modes.find(params[1][1]) != modes.end())
+    if (ModeString == "+i" || ModeString == "-i")
     {
-        if (params[1][0] == '+')
+        if (ModeString[0] == '+')
+            _mode |= modes.at(ModeString[1]);
+        else if (ModeString[0] == '-')
+            _mode ^= modes.at(ModeString[1]);
+    }
+    else if (ModeString == "+t" || ModeString == "-t")
+    {
+        if (ModeString[0] == '+')
+            _mode |= modes.at(ModeString[1]);
+        else if (ModeString[0] == '-')
+            _mode ^= modes.at(ModeString[1]);
+    }
+    else if (ModeString == "-k" || ModeString == "-l")
+    {
+        _mode ^= modes.at(ModeString[1]);
+        if (ModeString[1] == 'k')
+            _key = "";
+        else if (ModeString[1] == 'l')
+            _clientLimit = 16;
+    }
+    else
+        return false;
+    return true;
+}
+
+bool Channel::ChangeModeThreeParams(Client &client, const std::string& ModeString, const std::string& ModeArg, std::map<char,int>& modes)
+{
+    if (ModeString == "+l")
+    {
+        int limit = strtol(ModeArg.c_str(), NULL, 10);
+        if (limit > _members.size() && limit <= 16)
         {
-            client._channel.at(params[0])._mode |= modes.at(params[1][1]);
-            if(params[1][1] == 'k' && params.size() == 3)
-                client._channel.at(params[0]).setKey(params[2]);
+            _clientLimit = limit;
+            _mode |= modes.at(ModeString[1]);
+        }
+        else
+            return false;
+    }
+    else if (ModeString == "+k")
+    {
+        if(InvalidPassword(ModeArg))
+            return false;
+        _key = ModeArg;
+        _mode |= modes.at(ModeString[1]);
+    }
+    return true;
+}
+
+bool Channel::ChangeBannedMode(Client &banned, const std::string &ModeString, bool isbanned)
+{
+    if (ModeString == "+b")
+    {
+        if(getOperator()->_nick != banned._nick && !isbanned)
+        {
+            removeMembers(banned);
+            addBanned(banned);
             return true;
         }
-        else if (params[1][0] == '-')
+    }
+    else if (ModeString == "-b")
+    {
+        if(getOperator()->_nick != banned._nick && isbanned)
         {
-            client._channel.at(params[0])._mode ^= modes.at(params[1][1]);
-            if(params[1][1] == 'k' && params.size() == 3)
-                client._channel.at(params[0]).setKey("");
+            removeBanned(banned);  
             return true;
         }
     }

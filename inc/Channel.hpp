@@ -5,10 +5,10 @@
 
 enum Mode
 {
-    Default = 1,
+    ProtectedTopic = 1,
     InviteOnly = 2,
     KeyChannel = 4,
-    ProtectedTopic = 8
+    ChannelLimit = 8
 };
 
 class Channel
@@ -44,10 +44,10 @@ public:
     void addBanned(class Client &client);
     void removeBanned(class Client &client);
 
-
+    Client &findClientInChan(const std::string &NickName);
+    bool ChangeBannedMode(Client &banned, const std::string &ModeString, bool isbanned);
+    bool ChangeModeTwoParams(Client &client, const std::string& ModeString, std::map<char,int>& modes);
+    bool ChangeModeThreeParams(Client &client, const std::string& ModeString, const std::string& ModeArg, std::map<char,int>& modes);
     //gerekirse vectorlere add ve remove uye fonksiyonlari yaz
 
 };
-
-bool ChangeMode(Client &client, const std::vector<std::string> &ModeString, std::map<char, int> modes);
-

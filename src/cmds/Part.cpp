@@ -25,16 +25,18 @@ void Server::Part(Client &client, std::vector<std::string> params)
     {
         if(_channels.at(params[0])->getOperator()->_nick == client._nick)
         {
-            sendServerToChannel(params[0], "operator " + client._nick + ": closed the channel " + params[0]);
+            sendServerToChannel(params[0], PART(client._nick, params[0] + " :closed the channel"));
             for(std::vector<Client*>::iterator it = _channels.at(params[0])->getMembers().begin(); it != _channels.at(params[0])->getMembers().end(); it++)
                 (*it)->_channel.erase(params[0]);
             _channels[params[0]]->setOperator(NULL);
-           // delete _channels.at(params[0]);
             _channels.erase(params[0]);
+/*             Channel* puf = _channels.at(params[0]);
+            _channels.erase(puf->_name);
+            delete puf; */
         }
         else
         {
-            sendServerToChannel(params[0], client._nick + ": is out from " + params[0]);
+            sendServerToChannel(params[0], PART(client._nick, params[0]));
             _channels.at(params[0])->removeMembers(client);
         }
     }

@@ -1,7 +1,7 @@
 #include "../../inc/Server.hpp"
 
-//RPL_NAMREPLY (353)
-//RPL_ENDOFNAMES (366)
+//RPL_NAMREPLY (353)*
+//RPL_ENDOFNAMES (366)*
 
 void Server::Names(class Client & client,std::vector<std::string> params)
 {
@@ -21,12 +21,14 @@ void Server::Names(class Client & client,std::vector<std::string> params)
     }
     if (IsExistChannel(params[0]))
     {
-       sendServerToClient(client, "@" +  _channels.at(params[0])->getOperator()->_nick + '\n');
-        for (std::vector<Client*>::iterator it =  _channels.at(params[0])->getMembers().begin(); it !=  _channels.at(params[0])->getMembers().end(); ++it)
+        std::string liststr = "@" +  _channels.at(params[0])->getOperator()->_nick;
+        for (std::vector<Client*>::iterator it =  _channels.at(params[0])->getMembers().begin() + 1; it !=  _channels.at(params[0])->getMembers().end(); ++it)
         {
-            sendServerToClient(client,(*it)->_nick + "\n");
+            liststr += " " + (*it)->_nick;
         }
+        sendServerToClient(client, RPL_NAMREPLY(client._nick, params[0], liststr));
+        sendServerToClient(client, RPL_ENDOFNAMES(client._nick, params[0]));
     }
     else
-        sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));
+        sendServerToClient(client, RPL_ENDOFNAMES(client._nick, params[0]));
 }

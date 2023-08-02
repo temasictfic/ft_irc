@@ -34,14 +34,19 @@ void Server::Topic(Client &client, std::vector<std::string> params)
     }
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
-        if ( _channels.at(params[0])->_mode == ProtectedTopic &&  _channels.at(params[0])->getOperator()->_nick == client._nick)
+        if ((_channels.at(params[0])->_mode & ProtectedTopic) &&  _channels.at(params[0])->getOperator()->_nick == client._nick && (message.empty() || message == " "))
+        {
+            _channels.at(params[0])->_topic = "";
+            sendServerToChannel(params[0], RPL_NOTOPIC(client._nick, params[0]));
+        }
+        else if ((_channels.at(params[0])->_mode & ProtectedTopic)  &&  _channels.at(params[0])->getOperator()->_nick == client._nick)
         {
              _channels.at(params[0])->_topic = message;
             sendServerToChannel(params[0], RPL_TOPIC(client._nick,params[0],message));
         }
-        else if ( _channels.at(params[0])->_mode == ProtectedTopic)
+        else if ((_channels.at(params[0])->_mode & ProtectedTopic))
             sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._nick, params[0]));
-        else if(_channels.at(params[0])->_topic.empty() || message.empty() || message == " ")
+        else if( message.empty() || message == " ")
         {
             _channels.at(params[0])->_topic = "";
             sendServerToChannel(params[0], RPL_NOTOPIC(client._nick, params[0]));

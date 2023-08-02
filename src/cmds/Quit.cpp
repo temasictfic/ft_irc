@@ -2,21 +2,25 @@
 
 // NONE*
 
-void Server::Quit(Client &client, std::vector<std::string> params)
+void Server::Quit(Client &client, std::vector<std::string>)
 {
     if(client._status != UsernameRegistered)
     {
         sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
-    (void)params;
     // apart from channel.
-    if (client._channel.find(params[0]) != client._channel.end())
+    if (!client._channel.empty())
     {
-        std::vector<std::string> par;
-        par.push_back(client._channel.at(params[0])._name);
-        Part(client, par);
+        for (std::map<std::string, Channel&>::iterator it = client._channel.begin(); it != client._channel.end(); it++)
+        {
+            std::vector<std::string> par;
+            par.push_back(it->first);
+            Part(client, par);
+            par.clear();      
+        }  
     }
     // make client offline.
+    sendServerToClient(client, QUIT(client._nick, ""));
     client._online = false;
 }

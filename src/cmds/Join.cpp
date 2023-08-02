@@ -30,7 +30,7 @@ void Server::Join(Client &client,std::vector<std::string> params)
     if (IsExistChannel(params[0]))
     {
         if (IsInChannel(client, params[0])) // 2 kere join farklı channel cöz.
-            sendServerToClient(client, ERR_USERONCHANNEL(client._nick, params[0]));
+            sendServerToClient(client, ERR_USERONCHANNEL(client._nick, params[1], params[0]));
         else if (IsBannedClient(client, params[0]))
             sendServerToClient(client,ERR_BANNEDFROMCHAN(client._nick, params[0]));
         else if (IsChannelLimitFull(params[0]))
