@@ -47,5 +47,6 @@ void Server::User(Client &client, std::vector<std::string>params)
         std::cout << "Username changed" << "\n";
         break;
     default:
+        break;
     }
 }

@@ -22,6 +22,15 @@
 //MODE #foobar -b bunny
 //MODE #foobar +b bunny
 //MODE +o JOIN ile ilk channnel kurulunca
+const std::map<char, int> ModeMap()
+{
+    static std::map<char, int> modes;
+    modes['i'] = InviteOnly;
+    modes['k'] = KeyChannel;
+    modes['t'] = ProtectedTopic;
+    modes['l'] = ChannelLimit;
+    return modes;
+}
 
 void Server::Mode(Client &client, std::vector<std::string> params)
 {
@@ -30,12 +39,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
         sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
-    std::map<char, int> modes;
-    modes['i'] = InviteOnly;
-    modes['k'] = KeyChannel;
-    modes['t'] = ProtectedTopic;
-    modes['l'] = ChannelLimit;
-
+    const std::map<char, int>& modes = ModeMap();
 
     int err = ParamsSizeControl(params, 1, 2);
     if (err != 0)
@@ -50,7 +54,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
     if (IsExistChannel(params[0]))
     {
         std::string modestr = "+";
-        for (std::map<char, int>::iterator it = modes.begin(); it != modes.end(); it++)
+        for (std::map<char, int>::const_iterator it = modes.begin(); it != modes.end(); it++)
             if (_channels.at(params[0])->_mode & it->second)
                 modestr += it->first;
         if (count == 1)
@@ -59,37 +63,32 @@ void Server::Mode(Client &client, std::vector<std::string> params)
         {
             if(count == 2)
             {
-                if (_channels.at(params[0])->ChangeModeTwoParams(client, params[1], modes))
+                if (_channels.at(params[0])->ChangeModeTwoParams(params[1], modes))
                    sendServerToChannel(params[0], MODE(client._nick, params[0], modestr, "")); 
                 else
                     sendServerToClient(client, ERR_UNKNOWNMODE(client._nick, params[1]));
             }
             else if(count == 3)
             {
-                if (_channels.at(params[0])->ChangeModeThreeParams(client, params[1], params[2], modes))
+                if (_channels.at(params[0])->ChangeModeThreeParams(params[1], params[2], modes))
                     sendServerToChannel(params[0], MODE(client._nick, params[0], modestr, "")); 
+                else if (IsExistClient(params[2]) && _channels.at(params[0])->ChangeBannedMode(findClient(params[2]),params[1], IsBannedClient(findClient(params[2]), params[0])))
+                {
+                    sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], params[2])); 
+                    std::vector<Client*>::iterator it = _channels.at(params[0])->getBanned().begin();
+                    std::vector<Client*>::iterator end = _channels.at(params[0])->getBanned().end();
+                    for (; it != end; it++)
+                        sendServerToClient(client, RPL_BANLIST(client._nick, params[0], (*it)->_nick));
+                    sendServerToClient(client, RPL_ENDOFBANLIST(client._nick, params[0]));
+                }
+                else if (!IsExistClient(params[2]))
+                    sendServerToClient(client, ERR_NOSUCHNICK(client._nick, params[2]));
                 else
                     sendServerToClient(client, ERR_UNKNOWNMODE(client._nick, params[1]));
-                if (IsExistClient(params[2]))
-                {
-                    if (_channels.at(params[0])->ChangeBannedMode(findClient(params[2]),params[1], IsBannedClient(findClient(params[2]), params[0])))
-                    {
-                        sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], params[2])); 
-                        std::vector<Client*>::iterator it = _channels.at(params[0])->getBanned().begin();
-                        std::vector<Client*>::iterator end = _channels.at(params[0])->getBanned().end();
-                        for (; it != end; it++)
-                            sendServerToClient(client, RPL_BANLIST(client._nick, params[0], (*it)->_nick));
-                        sendServerToClient(client, RPL_ENDOFBANLIST(client._nick, params[0]));
-                    }
-                    else
-                        sendServerToClient(client, ERR_UNKNOWNMODE(client._nick, params[1]));
-                }
-                else
-                    sendServerToClient(client, ERR_NOSUCHNICK(client._nick, params[2]));
              }
         }
         else
-            sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._nick, client._channel.at(params[0])._name));
+            sendServerToClient(client, ERR_CHANOPRIVSNEEDED(client._nick, client._channel.at(params[0])->_name));
     }
     else
         sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));

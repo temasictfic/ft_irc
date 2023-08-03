@@ -41,5 +41,5 @@ void Server::List(class Client &client, std::vector<std::string> params)
         sendServerToClient(client, RPL_LISTEND(client._nick));
     }
     else
-       sendServerToClient(client, ERR_NOSUCHCHANNEL(client._nick, params[0]));
+       sendServerToClient(client, RPL_LISTEND(client._nick));
 }

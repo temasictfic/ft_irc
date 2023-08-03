@@ -46,8 +46,8 @@ public:
 
     Client &findClientInChan(const std::string &NickName);
     bool ChangeBannedMode(Client &banned, const std::string &ModeString, bool isbanned);
-    bool ChangeModeTwoParams(Client &client, const std::string& ModeString, std::map<char,int>& modes);
-    bool ChangeModeThreeParams(Client &client, const std::string& ModeString, const std::string& ModeArg, std::map<char,int>& modes);
+    bool ChangeModeTwoParams(const std::string& ModeString, const std::map<char,int>& modes);
+    bool ChangeModeThreeParams(const std::string& ModeString, const std::string& ModeArg, const std::map<char,int>& modes);
     //gerekirse vectorlere add ve remove uye fonksiyonlari yaz
 
 };

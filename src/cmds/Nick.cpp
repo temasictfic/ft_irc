@@ -44,7 +44,7 @@ void Server::Nick(Client &client, std::vector<std::string> params)
         std::string old_nick = client._nick;
         client._nick = ToLowercase(params[0]);
         std::cout << "Nick changed" << "\n";
-        for (std::map<std::string, Channel&>::iterator chan = client._channel.begin(); chan != client._channel.end(); chan++)
+        for (std::map<std::string, Channel*>::iterator chan = client._channel.begin(); chan != client._channel.end(); chan++)
         {
             sendClientToChannel(client, chan->first, ":" + old_nick + " NICK " + client._nick);
         }

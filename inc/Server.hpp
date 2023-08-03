@@ -25,6 +25,7 @@
 const int MAX_CLIENTS = 10; // Maximum number of clients to handle
 const int BUFFER_SIZE = 1024;
 
+
  enum Prefix
  {
     PrefixClient,
@@ -43,7 +44,7 @@ private:
     std::map<std::string, class Channel*> _channels;
     
 public:
-    std::map<std::string, void (Server::*)(class Client &, std::vector<std::string>)> cmds;
+    const std::map<std::string, void (Server::*)(class Client &, std::vector<std::string>)> cmds;
 
     Server(const std::string &Port, const std::string &Password);
     ~Server();

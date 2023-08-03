@@ -5,6 +5,7 @@
 #define MODE(FromWho, ChanName, ModeStr, Target) ":" + FromWho + " MODE " + ChanName + " " + ModeStr + " " + Target
 #define PRIVMSG(FromWho, To, Message) ":" + FromWho + " PRIVMSG " + To + " :" + Message
 #define INVITE(FromWho, To, ChanName) ":" + FromWho + " INVITE " + To + " " + ChanName
+#define JOIN(Nick, ChanName) ":" + Nick + " JOIN " + ChanName
 #define KICK(Nick, ChanName, KickedNick) ":" + Nick + " KICK " + ChanName + " " + KickedNick
 #define PART(Nick, ChanName) ":" + Nick + " PART " + ChanName
 #define QUIT(Nick, Reason) ":" + Nick + " QUIT :Quit: " + Reason

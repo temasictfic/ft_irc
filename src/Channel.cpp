@@ -8,7 +8,7 @@ Channel::Channel(std::string ChannelName, Client &op)
     _clientLimit = 16;
     _key = "";
     _operator = &op;
-    op._channel[ChannelName] = *this;
+    op._channel[ChannelName] = this;
     //_banned = std::vector<class Client*>();
     //_members = std::vector<class Client*>();
     //this->addMembers(op);
@@ -88,7 +88,7 @@ void Channel::setOperator(Client *client)
     _operator = client;
 }
 
-bool Channel::ChangeModeTwoParams(Client &client, const std::string& ModeString, std::map<char,int>& modes)
+bool Channel::ChangeModeTwoParams(const std::string& ModeString, const std::map<char,int>& modes)
 {
     if (ModeString == "+i" || ModeString == "-i")
     {
@@ -117,11 +117,11 @@ bool Channel::ChangeModeTwoParams(Client &client, const std::string& ModeString,
     return true;
 }
 
-bool Channel::ChangeModeThreeParams(Client &client, const std::string& ModeString, const std::string& ModeArg, std::map<char,int>& modes)
+bool Channel::ChangeModeThreeParams(const std::string& ModeString, const std::string& ModeArg, const std::map<char,int>& modes)
 {
     if (ModeString == "+l")
     {
-        int limit = strtol(ModeArg.c_str(), NULL, 10);
+        size_t limit = strtol(ModeArg.c_str(), NULL, 10);
         if (limit > _members.size() && limit <= 16)
         {
             _clientLimit = limit;
@@ -161,3 +161,4 @@ bool Channel::ChangeBannedMode(Client &banned, const std::string &ModeString, bo
     }
     return false;
 }
+

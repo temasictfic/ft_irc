@@ -1,6 +1,28 @@
 #include "../inc/Server.hpp"
 
-Server::Server(const std::string &Port, const std::string &Password)
+const std::map<std::string, void (Server::*)(class Client &, std::vector<std::string>)> CmdMap()
+{
+    std::map<std::string, void (Server::*)(class Client &, std::vector<std::string>)> cmds;
+    cmds["CAP"] = &Server::Cap;
+    cmds["PASS"] = &Server::Pass;
+    cmds["NICK"] = &Server::Nick;
+    cmds["USER"] = &Server::User;
+    cmds["PING"] = &Server::Ping;
+    cmds["QUIT"] = &Server::Quit;
+    cmds["JOIN"] = &Server::Join;
+    cmds["PART"] = &Server::Part;
+    cmds["TOPIC"] = &Server::Topic;
+    cmds["NAMES"] = &Server::Names;
+    cmds["INVITE"] = &Server::Invite;
+    cmds["MODE"] = &Server::Mode;
+    cmds["KICK"] = &Server::Kick;
+    cmds["NOTICE"] = &Server::Notice;
+    cmds["PRIVMSG"] = &Server::PrivMsg;
+    cmds["LIST"] = &Server::List;
+    return cmds;
+}
+
+Server::Server(const std::string &Port, const std::string &Password) : cmds(CmdMap())
 {
     if (Port.empty())
     {
@@ -23,23 +45,6 @@ Server::Server(const std::string &Port, const std::string &Password)
 
     _channels = std::map<std::string, class Channel*>();
     _clients =  std::vector<class Client*>();
-
-    cmds["CAP"] = &Server::Cap;
-    cmds["PASS"] = &Server::Pass;
-    cmds["NICK"] = &Server::Nick;
-    cmds["USER"] = &Server::User;
-    cmds["PING"] = &Server::Ping;
-    cmds["QUIT"] = &Server::Quit;
-    cmds["JOIN"] = &Server::Join;
-    cmds["PART"] = &Server::Part;
-    cmds["TOPIC"] = &Server::Topic;
-    cmds["NAMES"] = &Server::Names;
-    cmds["INVITE"] = &Server::Invite;
-    cmds["MODE"] = &Server::Mode;
-    cmds["KICK"] = &Server::Kick;
-    cmds["NOTICE"] = &Server::Notice;
-    cmds["PRIVMSG"] = &Server::PrivMsg;
-    cmds["LIST"] = &Server::List;
 }
 
 Server::~Server() 
@@ -283,6 +288,7 @@ int Server::sendClientToChannel(Client &sender, const std::string &ChannelName, 
 {
     if (sender._channel.empty())
         return 0;
+
     std::string formattedMessage = message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getMembers().end();
