@@ -2,6 +2,7 @@
 
 
 //----COMMAND_MESSAGES
+#define CAP_LS ":ircserv CAP * LS :"
 #define MODE(FromWho, ChanName, ModeStr, Target) ":" + FromWho + " MODE " + ChanName + " " + ModeStr + " " + Target
 #define PRIVMSG(FromWho, To, Message) ":" + FromWho + " PRIVMSG " + To + " :" + Message
 #define INVITE(FromWho, To, ChanName) ":" + FromWho + " INVITE " + To + " " + ChanName

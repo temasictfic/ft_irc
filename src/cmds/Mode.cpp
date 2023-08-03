@@ -13,6 +13,8 @@
 
 
 //MODE #foobar
+//MODE #foobar -t
+//MODE #foobar +t
 //MODE #foobar -i
 //MODE #foobar +i
 //MODE #foobar -l
@@ -64,14 +66,14 @@ void Server::Mode(Client &client, std::vector<std::string> params)
             if(count == 2)
             {
                 if (_channels.at(params[0])->ChangeModeTwoParams(params[1], modes))
-                   sendServerToChannel(params[0], MODE(client._nick, params[0], modestr, "")); 
+                   sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], "")); 
                 else
                     sendServerToClient(client, ERR_UNKNOWNMODE(client._nick, params[1]));
             }
             else if(count == 3)
             {
                 if (_channels.at(params[0])->ChangeModeThreeParams(params[1], params[2], modes))
-                    sendServerToChannel(params[0], MODE(client._nick, params[0], modestr, "")); 
+                    sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], "")); 
                 else if (IsExistClient(params[2]) && _channels.at(params[0])->ChangeBannedMode(findClient(params[2]),params[1], IsBannedClient(findClient(params[2]), params[0])))
                 {
                     sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], params[2])); 

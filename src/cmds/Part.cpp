@@ -12,7 +12,7 @@ void Server::Part(Client &client, std::vector<std::string> params)
         sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
         return ;
     }
-    int err = ParamsSizeControl(params, 1, 0);
+    int err = ParamsSizeControl(params, 1, 1);
     if (err != 0)
     {
         if (err == -1)

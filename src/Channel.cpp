@@ -18,7 +18,7 @@ Channel::Channel(){}
 
 Channel::~Channel()
 {
-    delete this;
+    //delete this;
 }
  
 const std::string &Channel::getKey() const

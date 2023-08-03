@@ -30,7 +30,7 @@ void Server::User(Client &client, std::vector<std::string>params)
         if(count > 3)
         {
             client._realname = params[3].substr(1);
-            for (size_t i = 0; i < count - 4; i++)
+            for (size_t i = 4; i < count; i++)
                 client._realname += " " + params[i];
         }
         client._status = UsernameRegistered;
@@ -41,7 +41,7 @@ void Server::User(Client &client, std::vector<std::string>params)
         if(count > 3)
         {
             client._realname = params[3].substr(1);
-            for (size_t i = 0; i < count - 4; i++)
+            for (size_t i = 4; i < count; i++)
                 client._realname += " " + params[i];
         }
         std::cout << "Username changed" << "\n";

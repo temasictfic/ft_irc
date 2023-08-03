@@ -40,7 +40,7 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
     enum Prefix pre = PrefixControl(params[0]);
     std::string message;
     message = params[1].substr(1);
-    for (size_t i = 0; i < count - 2; i++)
+    for (size_t i = 2; i < count; i++)
             message += " " + params[i];
     switch (pre)
     {

@@ -168,6 +168,7 @@ void Server::Serve(fd_set readSet)
         int clientSocket = (*client)->getSocketFd();
         if ((*client)->_online == false)
         {
+            sendServerToClient(**client, QUIT((*client)->_nick, ""));
             close(clientSocket);
             client = _clients.erase(client);
             continue;

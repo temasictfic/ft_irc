@@ -21,6 +21,5 @@ void Server::Quit(Client &client, std::vector<std::string>)
         }  
     }
     // make client offline.
-    sendServerToClient(client, QUIT(client._nick, ""));
     client._online = false;
 }

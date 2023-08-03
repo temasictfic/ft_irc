@@ -29,12 +29,14 @@ void Server::Topic(Client &client, std::vector<std::string> params)
     if(count > 1)
     {
         message = params[1].substr(1);
-        for (size_t i = 0; i < count - 2; i++)
+        for (size_t i = 2; i < count; i++)
             message += " " + params[i];
     }
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
-        if ((_channels.at(params[0])->_mode & ProtectedTopic) &&  _channels.at(params[0])->getOperator()->_nick == client._nick && (message.empty() || message == " "))
+        if(count == 1)
+            sendServerToClient(client, RPL_TOPIC(client._nick, params[0], _channels.at(params[0])->_topic));
+        else if ((_channels.at(params[0])->_mode & ProtectedTopic) &&  _channels.at(params[0])->getOperator()->_nick == client._nick && (message.empty() || message == " "))
         {
             _channels.at(params[0])->_topic = "";
             sendServerToChannel(params[0], RPL_NOTOPIC(client._nick, params[0]));

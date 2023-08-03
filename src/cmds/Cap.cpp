@@ -1,5 +1,4 @@
 #include "../../inc/Server.hpp"
-#define CAP_LS "ircserv: CAP * LS :"
 
 //CAP LS 302
 void Server::Cap(Client &client, std::vector<std::string> params)

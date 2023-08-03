@@ -38,8 +38,6 @@ void Server::Join(Client &client,std::vector<std::string> params)
             sendServerToClient(client,ERR_BANNEDFROMCHAN(client._nick, params[0]));
         else if (IsChannelLimitFull(params[0]))
             sendServerToClient(client,ERR_CHANNELISFULL(client._nick, params[0]));
-        else if (client._channel.size() == 4)
-            sendServerToClient(client,ERR_TOOMANYCHANNELS(client._nick, params[0]));
         else if (_channels.at(params[0])->_mode & InviteOnly && client._invitedchan != params[0])
             sendServerToClient(client,ERR_INVITEONLYCHAN(client._nick, params[0]));
         else if (params.size() < 2 && HasChannelKey(params[0]))
@@ -59,12 +57,14 @@ void Server::Join(Client &client,std::vector<std::string> params)
     {
         if (InvalidLetter(params[0]) || params[0][0] != '#')
             sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("JOIN"), std::string("Forbidden letter in use as Channel name or didn't use #.")));
+        else if (client._channel.size() == 4)
+            sendServerToClient(client,ERR_TOOMANYCHANNELS(client._nick, params[0]));
         else
         {
             Channel* newish = new Channel(params[0],client);
-            newish->addMembers(client);
             _channels.insert(std::make_pair(std::string(params[0]), newish));
             sendServerToClient(client, JOIN(client._nick, params[0]));
+            newish->addMembers(client);
            if(params.size() == 2)
            {
                 std::vector<std::string> vec;
