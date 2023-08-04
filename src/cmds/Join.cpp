@@ -46,7 +46,7 @@ void Server::Join(Client &client,std::vector<std::string> params)
     else
     {
         if (InvalidLetter(params[0]) || params[0][0] != '#')
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("JOIN"), std::string("Forbidden letter in use as Channel name or didn't use #.")));
+            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, "JOIN", "Forbidden letter in use as Channel name or didn't use #."));
         else if (client._channel.size() == 4)
             sendServerToClient(client,ERR_TOOMANYCHANNELS(client._nick, params[0]));
         else

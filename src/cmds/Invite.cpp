@@ -22,10 +22,8 @@ void Server::Invite(Client &client, std::vector<std::string> params)
         Client& invited = findClient(params[1]);
         invited._invitedchan = params[0];
         if (IsInChannel(invited, params[0]))
-        {
-            sendServerToClient(client, ERR_USERONCHANNEL(client._nick, invited._nick, params[0]));
-            return;
-        }
+            return sendServerToClient(client, ERR_USERONCHANNEL(client._nick, invited._nick, params[0]));
+            
         std::vector<std::string> channel;
         channel.push_back(params[0]);
         if ((_channels.at(params[0])->_mode & InviteOnly) && IsOperator(client, params[0]))  

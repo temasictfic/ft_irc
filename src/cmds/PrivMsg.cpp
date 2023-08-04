@@ -25,15 +25,10 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
         return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
     size_t count = params.size();
     if(count == 1)
-    {
-        sendServerToClient(client,ERR_NOTEXTTOSEND(client._nick));
-        return ;
-    }
-    else if(count == 0)
-    {
-        sendServerToClient(client, ERR_NORECIPIENT(client._nick, std::string("PRIVMSG")));
-        return ;
-    }
+        return sendServerToClient(client,ERR_NOTEXTTOSEND(client._nick));
+    else if (count == 0)
+        return sendServerToClient(client, ERR_NORECIPIENT(client._nick, "PRIVMSG"));
+
     enum Prefix pre = PrefixControl(params[0]);
     std::string message;
     message = params[1].substr(1);
