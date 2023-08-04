@@ -37,7 +37,7 @@ void Server::Join(Client &client,std::vector<std::string> params)
         else
         {
             client._invitedchan = "";
-            _channels.at(params[0])->addMembers(client);
+            _channels.at(params[0])->addMember(client);
             sendServerToChannel(params[0], JOIN(client._nick, params[0])); //sendServerToCLient olabilir
             Topic(client, std::vector<std::string>(1,params[0]));
             Names(client, std::vector<std::string>(1,params[0]));
@@ -54,7 +54,7 @@ void Server::Join(Client &client,std::vector<std::string> params)
             Channel* newish = new Channel(params[0],client);
             _channels.insert(std::make_pair(std::string(params[0]), newish));
             sendServerToClient(client, JOIN(client._nick, params[0]));
-            newish->addMembers(client);
+            newish->addMember(client);
            if(params.size() == 2)
            {
                 std::vector<std::string> vec;

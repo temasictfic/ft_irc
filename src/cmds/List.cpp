@@ -9,13 +9,13 @@ void Server::List(class Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
         return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-    if(params.size() == 1)
+    if(params[0] == "")
     {
         std::ostringstream count;
         for (std::map<std::string, Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
         {
             count << it->second->getMembers().size();
-            sendServerToClient(client, RPL_LIST(client._nick, params[0], count.str(), it->second->_topic));
+            sendServerToClient(client, RPL_LIST(client._nick, it->first, count.str(), it->second->_topic));
             count.clear();
         }
         return sendServerToClient(client, RPL_LISTEND(client._nick));

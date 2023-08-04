@@ -185,9 +185,9 @@ void Server::Serve(fd_set readSet)
                     std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
                 else
                     std::cerr << "Failed to read from client socket.\n";
-                //Quit(**client, std::vector<std::string>());
-                close(clientSocket);
-                client = _clients.erase(client);
+                Quit(**client, std::vector<std::string>());
+                //close(clientSocket);
+                //client = _clients.erase(client);
                 continue;
             }
             if (bytesRead == 0)
@@ -195,12 +195,12 @@ void Server::Serve(fd_set readSet)
                 // Connection closed by the client
                 std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
 
-                //Quit(**client, std::vector<std::string>());
+                Quit(**client, std::vector<std::string>());
                 // Close the client socket
-                close(clientSocket);
+                //close(clientSocket);
 
                 // Remove the client from the vector and continue to the next client
-                client = _clients.erase(client);
+                //client = _clients.erase(client);
                 continue;
             }
             // check message length < 1024 including /r/n
@@ -219,12 +219,13 @@ void Server::Serve(fd_set readSet)
 void Server::ProcessCommand(std::string &message, Client *client)
 {
     std::vector<std::string> str = split(message,"\r\n");
-    for(std::vector<std::string>::iterator it = str.begin(); it != str.end(); it++)
+    for(std::vector<std::string>::iterator it = str.begin(); it != str.end()-1; ++it)
     {
-        //std::cout <<"split: " << *it << "\n";
-        size_t spacePos = (it->find(' ')  != std::string::npos) ? it->find(' ') : it->size() -1;
+        std::cout <<"split: " << *it << "\n";
+        size_t spacePos = (it->find(' ')  != std::string::npos) ? it->find(' ') : it->size();
         std::string command = it->substr(0, spacePos);
-        //std::cout <<"cmd: " << command << "\n";
+        std::cout <<"cmd: " << command << "\n";
+        spacePos = (spacePos == it->size()) ? spacePos -1 : spacePos;
         if (cmds.find(command) != cmds.end())
             (this->*cmds.at(command))(*client, split(it->substr(spacePos + 1), " "));
     }

@@ -22,7 +22,6 @@ bool Server::IsBannedClient(Client &client, const std::string &ChannelName)
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getBanned().end();
     for (; it != end; it++)
     {
-        std::cout << (*it)->_nick << "$\n";
         if ((*it)->_nick == client._nick)
             return true;
     }
@@ -69,7 +68,8 @@ int Server::ParamsSizeControl(Client& client, const std::string& Command, std::v
         err = 1;
     for (size_t i = 0; i < params.size(); i++)
     {
-        if(params[i].empty()){
+        if(params[i].empty())
+        {
             err = -1;
             break;
         }

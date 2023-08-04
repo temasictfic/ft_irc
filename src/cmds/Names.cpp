@@ -7,7 +7,7 @@ void Server::Names(class Client & client,std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
         return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-    if (ParamsSizeControl(client, "JOIN", params, 1, 0) != 0)
+    if (ParamsSizeControl(client, "NAMES", params, 1, 0) != 0)
         return;
     if (IsExistChannel(params[0]))
     {

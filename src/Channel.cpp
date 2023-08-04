@@ -37,7 +37,7 @@ std::vector<class Client*>& Channel::getMembers()
     return _members;
 }
 
-void Channel::addMembers(Client &client)
+void Channel::addMember(Client &client)
 {
     client._channel.insert(make_pair(_name,this));
    _members.push_back(&client);
@@ -49,7 +49,7 @@ void Channel::addBanned(Client &client)
     _banned.push_back(&client);
 }
 
-void Channel::removeMembers(Client &client)
+void Channel::removeMember(Client &client)
 {
     for(std::vector<Client*>::iterator it = _members.begin(); it != _members.end(); it++)
     {
@@ -133,6 +133,8 @@ bool Channel::ChangeModeThreeParams(const std::string& ModeString, const std::st
         _key = ModeArg;
         _mode |= modes.at(ModeString[1]);
     }
+    else 
+        return false;
     return true;
 }
 
@@ -142,7 +144,6 @@ bool Channel::ChangeBannedMode(Client &banned, const std::string &ModeString, bo
     {
         if(getOperator()->_nick != banned._nick && !isbanned)
         {
-            removeMembers(banned);
             addBanned(banned);
             return true;
         }

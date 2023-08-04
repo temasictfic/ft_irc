@@ -37,8 +37,8 @@ public:
     class Client  *getOperator() const;
     void setOperator(class Client *client);
 
-    void addMembers(class Client &client);
-    void removeMembers(class Client &client);
+    void addMember(class Client &client);
+    void removeMember(class Client &client);
 
     void addBanned(class Client &client);
     void removeBanned(class Client &client);

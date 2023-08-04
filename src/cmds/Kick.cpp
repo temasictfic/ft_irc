@@ -19,7 +19,7 @@ void Server::Kick(Client &client, std::vector<std::string> params)
         if(IsInChannel(kicked, params[0]) &&  !IsOperator(kicked, params[0]))
         {
             sendServerToChannel(params[0], KICK(client._nick, params[0], kicked._nick));
-            client._channel.at(params[0])->removeMembers(kicked);
+            client._channel.at(params[0])->removeMember(kicked);
         }
         else
             sendServerToClient(client, ERR_USERNOTINCHANNEL(client._nick, params[1], params[0]));

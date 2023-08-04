@@ -30,8 +30,7 @@ void Server::PrivMsg(class Client &client, std::vector<std::string > params)
         return sendServerToClient(client, ERR_NORECIPIENT(client._nick, "PRIVMSG"));
 
     enum Prefix pre = PrefixControl(params[0]);
-    std::string message;
-    message = params[1].substr(1);
+    std::string message = (params[1][0] == ':') ? params[1].substr(1) : params[1];
     for (size_t i = 2; i < count; i++)
             message += " " + params[i];
     switch (pre)

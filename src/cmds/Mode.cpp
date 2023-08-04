@@ -39,19 +39,20 @@ void Server::Mode(Client &client, std::vector<std::string> params)
     if(client._status != UsernameRegistered)
         return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
     if (ParamsSizeControl(client, "MODE", params, 1, 2) != 0)
-        return;
-        
+        return;      
     size_t count = params.size();
     const std::map<char, int>& modes = ModeMap();
     if (IsExistChannel(params[0]))
     {
         std::string modestr = "+";
         for (std::map<char, int>::const_iterator it = modes.begin(); it != modes.end(); it++)
+        {
             if (_channels.at(params[0])->_mode & it->second)
                 modestr += it->first;
+        }
         if (count == 1)
             sendServerToClient(client, RPL_CHANNELMODEIS(client._nick, params[0], modestr));
-        if (IsOperator(client, params[0]))
+        else if (IsOperator(client, params[0]))
         {
             if(count == 2)
             {
@@ -63,7 +64,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
             else if(count == 3)
             {
                 if (_channels.at(params[0])->ChangeModeThreeParams(params[1], params[2], modes))
-                    sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], "")); 
+                    sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], params[2])); 
                 else if (IsExistClient(params[2]) && _channels.at(params[0])->ChangeBannedMode(findClient(params[2]),params[1], IsBannedClient(findClient(params[2]), params[0])))
                 {
                     sendServerToChannel(params[0], MODE(client._nick, params[0], params[1], params[2])); 
