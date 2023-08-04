@@ -14,19 +14,9 @@
 void Server::Invite(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
-    int err = ParamsSizeControl(params, 2, 0);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("INVITE")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("INVITE"), std::string("Excessive argument is given")));
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "INVITE", params, 2, 0) != 0)
         return;
-    }
     if (IsExistClient(params[1]) && IsExistChannel(params[0]) && IsInChannel(client,params[0]))
     {
         Client& invited = findClient(params[1]);
@@ -38,9 +28,9 @@ void Server::Invite(Client &client, std::vector<std::string> params)
         }
         std::vector<std::string> channel;
         channel.push_back(params[0]);
-        if ((_channels.at(params[0])->_mode & InviteOnly) && _channels.at(params[0])->getOperator()->_nick == client._nick)  
+        if ((_channels.at(params[0])->_mode & InviteOnly) && IsOperator(client, params[0]))  
             Join(invited, channel);
-        else if(IsBannedClient(invited,params[0]) && _channels.at(params[0])->getOperator()->_nick == client._nick)
+        else if(IsBannedClient(invited,params[0]) && IsOperator(client, params[0]))
         {
             std::vector<std::string> params;
             params.push_back(params[0]);

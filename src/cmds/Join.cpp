@@ -17,19 +17,9 @@
 void Server::Join(Client &client,std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
-    int err = ParamsSizeControl(params, 1, 1);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("JOIN")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("JOIN"),std::string("Excessive argument is given")));
+      return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "JOIN", params, 1, 1) != 0)
         return;
-    }
     if (IsExistChannel(params[0]))
     {
         if (IsInChannel(client, params[0]))

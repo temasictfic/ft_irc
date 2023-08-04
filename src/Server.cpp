@@ -153,8 +153,6 @@ void Server::Run()
             newish->addHostname(_serverAddress);
             _clients.push_back(newish);
         }
-
-        // Server::serve()
         // Check client sockets for activity
         Serve(readSet);
     }
@@ -168,7 +166,7 @@ void Server::Serve(fd_set readSet)
         int clientSocket = (*client)->getSocketFd();
         if ((*client)->_online == false)
         {
-            sendServerToClient(**client, QUIT((*client)->_nick, ""));
+            //sendServerToClient(**client, QUIT((*client)->_nick, ""));
             close(clientSocket);
             client = _clients.erase(client);
             continue;
@@ -187,7 +185,7 @@ void Server::Serve(fd_set readSet)
                     std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
                 else
                     std::cerr << "Failed to read from client socket.\n";
-                Quit(**client, std::vector<std::string>());
+                //Quit(**client, std::vector<std::string>());
                 close(clientSocket);
                 client = _clients.erase(client);
                 continue;
@@ -197,7 +195,7 @@ void Server::Serve(fd_set readSet)
                 // Connection closed by the client
                 std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
 
-                Quit(**client, std::vector<std::string>());
+                //Quit(**client, std::vector<std::string>());
                 // Close the client socket
                 close(clientSocket);
 
@@ -208,7 +206,7 @@ void Server::Serve(fd_set readSet)
             // check message length < 1024 including /r/n
             //  Process received data and handle IRC commands
             std::string message(buffer, bytesRead);
-            std::cout << "Received data from client: $" << message << "$";
+            std::cout << "Received data from client: " << message << "\n";
             //  Check if the message starts with a command character
             ProcessCommand(message, *client);
 /*          else if (message[0] == '!')
@@ -233,30 +231,18 @@ void Server::ProcessCommand(std::string &message, Client *client)
     //sendServerToClient(*client, message); //rawMessage
 }
 
-/* void Server::ProcessChat(const std::string &message, Client *client)
+void Server::sendServerToClient(Client &reciever, const std::string &message)
 {
-    if (client->_channel)
-        sendClientToChannel(*client, client->_channel->_name, message);
-} */
-
-
-
-
-
-int Server::sendServerToClient(Client &reciever, const std::string &message)
-{
-    std::string formattedmessage = message + "\r\n";
-    if (send(reciever.getSocketFd(), formattedmessage.c_str(), formattedmessage.length(), 0) == -1)
+    std::string formattedMessage = message + "\r\n";
+    if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
     {
         std::cerr << "Failed to send chat message between "
                   << "ircserv"
                   << " -> " << reciever._nick << "\n";
-        return -1;
     }
-    return 0;
 }
 
-int Server::sendServerToChannel(const std::string &ChannelName, const std::string &message)
+void Server::sendServerToChannel(const std::string &ChannelName, const std::string &message)
 {
     std::string formattedMessage = message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
@@ -269,10 +255,7 @@ int Server::sendServerToChannel(const std::string &ChannelName, const std::strin
             continue;
         }
     }
-    return 0;
 }
-
-
 
 /* int Server::sendClientToClient(Client &sender, Client &reciever, const std::string &message)
 {
@@ -285,11 +268,10 @@ int Server::sendServerToChannel(const std::string &ChannelName, const std::strin
     return 0;
 } */
 
-int Server::sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message)
+void Server::sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message)
 {
     if (sender._channel.empty())
-        return 0;
-
+        return ;
     std::string formattedMessage = message + "\r\n";
     std::vector<Client*>::iterator client = _channels.at(ChannelName)->getMembers().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getMembers().end();
@@ -304,5 +286,4 @@ int Server::sendClientToChannel(Client &sender, const std::string &ChannelName, 
             }
         }
     }
-    return 1;
 }

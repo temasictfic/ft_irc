@@ -8,20 +8,10 @@
 //USER Bit 0 * :realname
 void Server::User(Client &client, std::vector<std::string>params)
 {
-    if (client._status < 2)
-    {
-        sendServerToClient(client, ERR_NOTREGISTERED(client._nick));
+    if (client._status < NickRegistered)
+        return sendServerToClient(client, ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "USER", params, 3, 2) != 0)  
         return;
-    }
-    int err = ParamsSizeControl(params, 3, 2);
-    if ( err != 0)  
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("USER")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("USER"), std::string("Excessive argument is given")));
-        return;
-    }
     size_t count = params.size();
     switch (client._status)
     {

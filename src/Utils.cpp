@@ -10,45 +10,14 @@ std::string ToLowercase(const std::string& Names)
     return new_str;
 }
 
-/* std::string ToUppercase(std::string &Names)
-{
-    size_t i = 0;
-    for (std::string::iterator it = Names.begin(); it != Names.end(); it++)
-    {
-        toupper(*it);
-    }
-    return Names;
-}
- */
-bool ValidModeChars(const std::string &ModeString)
-{
-    int count = 0;
-    if (ModeString[0] == '+' || ModeString[0] == '-')
-    {
-        std::string modes = "iklto";
-        for (size_t i = 0; i < 5; i++)
-        {
-            if (ModeString[1] == modes[i])
-                count++;
-        }
-    }
-    return count != 0;
-}
-
 bool InvalidPassword(const std::string &Password)
 {
     if (Password.size() < 4 && Password.size() > 8)
-    {
         return true;
-        // Password size hatası?
-    }
     for (size_t i = 0; i < Password.size() - 1; i++)
     {
         if (!isalnum(Password[i]))
-        {
-            // password invalid char hatası?
             return true;
-        }
     }
     return false;
 }
@@ -65,6 +34,7 @@ bool InvalidLetter(const std::string &Nick)
     }
     return false;
 }
+
 bool InvalidPrefix(const std::string &Nick)
 {
     if(Nick.empty())

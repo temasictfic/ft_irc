@@ -8,22 +8,12 @@
 void Server::Part(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
-    int err = ParamsSizeControl(params, 1, 1);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("PART")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("PART"), std::string("Excessive argument is given")));
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "PART", params, 1, 1) != 0)
         return;
-    }
     if (IsExistChannel(params[0]) && IsInChannel(client, params[0]))
     {
-        if(_channels.at(params[0])->getOperator()->_nick == client._nick)
+        if(IsOperator(client, params[0]))
         {
             sendServerToChannel(params[0], PART(client._nick, params[0] + " :closed the channel"));
             for(std::vector<Client*>::iterator it = _channels.at(params[0])->getMembers().begin(); it != _channels.at(params[0])->getMembers().end(); it++)

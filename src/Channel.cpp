@@ -9,12 +9,8 @@ Channel::Channel(std::string ChannelName, Client &op)
     _key = "";
     _operator = &op;
     op._channel[ChannelName] = this;
-    //_banned = std::vector<class Client*>();
-    //_members = std::vector<class Client*>();
-    //this->addMembers(op);
 }
 
-Channel::Channel(){}
 
 Channel::~Channel()
 {

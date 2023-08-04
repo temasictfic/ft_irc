@@ -22,10 +22,7 @@
 void Server::PrivMsg(class Client &client, std::vector<std::string > params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
     size_t count = params.size();
     if(count == 1)
     {

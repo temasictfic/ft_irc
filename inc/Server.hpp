@@ -1,30 +1,27 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+#include <iostream>
 #include <vector>
 #include <map>
 #include <string>
-#include <iostream>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <fcntl.h>
-#include <cerrno>
-#include <cstring>
-#include <sys/types.h>
-#include <cstdlib>
-#include <unistd.h>
-#include <netinet/in.h>
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <sys/types.h>
 #include "../inc/Client.hpp"
 #include "../inc/Channel.hpp"
 #include "../inc/Replies.hpp"
 #include "../inc/Utils.hpp"
-// isbannedclient true false yerdeğiştirdim
 
-// enum Mode : unsigned int;
 const int MAX_CLIENTS = 10; // Maximum number of clients to handle
 const int BUFFER_SIZE = 1024;
-
 
  enum Prefix
  {
@@ -54,7 +51,6 @@ public:
     void Run();
     void Serve(fd_set readSet);
     void ProcessCommand(std::string &message, Client *client);
-    void ProcessChat(const std::string &message, Client *client);
 
     // Commands
     void Cap(class Client &, std::vector<std::string>);
@@ -79,20 +75,18 @@ public:
     bool IsExistChannel(const std::string &ChannelName);
     bool IsBannedClient(class Client &, const std::string &ChannelName);
     bool IsInChannel(class Client &, const std::string &ChannelName);
-    enum Prefix PrefixControl(std::string str);
-    // bool IsOperator(Client &client, const std::string& Nick);
-    bool HasChannelKey(const std::string &ChannelName);
-    //bool IsKeyWrong(const std::string &ChannelName, const std::string &Key);
+    bool IsOperator(Client &client, const std::string &ChannelName);
     bool IsChannelLimitFull(const std::string &ChannelName);
-    Client &findClient(const std::string &NickName);
-    int ParamsSizeControl(std::vector<std::string> params, size_t index, size_t optional);
+    bool HasChannelKey(const std::string &ChannelName);
     bool PasswordMatched(const std::string &PasswordOrigin, const std::string &PasswordGiven);
+    int ParamsSizeControl(Client& client, const std::string& Command, std::vector<std::string> params, size_t necessary, size_t optional);
+    enum Prefix PrefixControl(std::string str);
+    Client &findClient(const std::string &NickName);
 
     // Send messagges
-    int sendServerToClient(Client &reciever, const std::string &message);
-    int sendServerToChannel(const std::string &ChannelName, const std::string &message);
-    //int sendClientToClient(Client &sender, Client &reciever, const std::string &message);
-    int sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message);
+    void sendServerToClient(Client &reciever, const std::string &message);
+    void sendServerToChannel(const std::string &ChannelName, const std::string &message);
+    void sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message);
 
     const std::string &getPassword() const;
 

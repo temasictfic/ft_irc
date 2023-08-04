@@ -4,7 +4,7 @@
 
 # Function to generate a random 4-letter alphabetic name
 generate_random_name() {
-  cat /dev/urandom | tr -dc 'a-zA-Z' | fold -w 4 | head -n 1
+  cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z' | fold -w 4 | head -n 1
 }
 
 SERVER='localhost'
@@ -26,7 +26,7 @@ input() {
 	echo -e "JOIN $CHANNEL";
 
   # Read user input and pass it to the server
-  while read -r irc_command; do
+  while IFS= read -r irc_command; do
     echo -e "$irc_command"
   done
   }
@@ -39,7 +39,7 @@ input() {
 #-i $INTERVAL 
 
 function my_irc {
-	input | nc -C $SERVER $PORT
+  input | /usr/bin/nc -C -N $SERVER $PORT
 }
 
 my_irc

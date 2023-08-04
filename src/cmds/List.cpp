@@ -2,16 +2,13 @@
 #include <sstream>
 
 //RPL_LISTSTART (321)
-//RPL_LIST (322)
-//RPL_LISTEND (323)
+//RPL_LIST (322)*
+//RPL_LISTEND (323)*
 
 void Server::List(class Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
     if(params.size() == 1)
     {
         std::ostringstream count;
@@ -21,18 +18,10 @@ void Server::List(class Client &client, std::vector<std::string> params)
             sendServerToClient(client, RPL_LIST(client._nick, params[0], count.str(), it->second->_topic));
             count.clear();
         }
-        sendServerToClient(client, RPL_LISTEND(client._nick));
-        return ;
+        return sendServerToClient(client, RPL_LISTEND(client._nick));
     }
-    int err = ParamsSizeControl(params, 0, 1);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("LIST")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("LIST"), std::string("Excessive argument is given")));
+    if (ParamsSizeControl(client, "LIST", params, 0, 1) != 0)
         return;
-    }
     if (IsExistChannel(params[0]))
     {
         std::ostringstream count;

@@ -28,7 +28,6 @@ public:
     std::map<std::string, Channel*> _channel;
 
     Client(int clientSocket);
-    //Client();
     ~Client();
 
     //getter setter

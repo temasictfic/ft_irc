@@ -37,22 +37,12 @@ const std::map<char, int> ModeMap()
 void Server::Mode(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
-    const std::map<char, int>& modes = ModeMap();
-
-    int err = ParamsSizeControl(params, 1, 2);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("MODE")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("MODE"), std::string("Excessive argument is given")));
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "MODE", params, 1, 2) != 0)
         return;
-    }
+        
     size_t count = params.size();
+    const std::map<char, int>& modes = ModeMap();
     if (IsExistChannel(params[0]))
     {
         std::string modestr = "+";
@@ -61,7 +51,7 @@ void Server::Mode(Client &client, std::vector<std::string> params)
                 modestr += it->first;
         if (count == 1)
             sendServerToClient(client, RPL_CHANNELMODEIS(client._nick, params[0], modestr));
-        if (client._nick == _channels.at(params[0])->getOperator()->_nick)
+        if (IsOperator(client, params[0]))
         {
             if(count == 2)
             {

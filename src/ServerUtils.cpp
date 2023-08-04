@@ -16,7 +16,7 @@ bool Server::IsExistChannel(const std::string &ChannelName)
     return (it != _channels.end()) ? true : false;
 }
 
-bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
+bool Server::IsBannedClient(Client &client, const std::string &ChannelName)
 {
     std::vector<Client*>::iterator it = _channels.at(ChannelName)->getBanned().begin();
     std::vector<Client*>::iterator end = _channels.at(ChannelName)->getBanned().end();
@@ -29,38 +29,27 @@ bool Server::IsBannedClient(Client &client, const std::string &ChannelName) // c
     return false;
 }
 
-bool Server::IsInChannel(Client &client, const std::string &ChannelName) // channela taşınabilir bu method
+bool Server::IsInChannel(Client &client, const std::string &ChannelName)
 {
     return (client._channel.find(ChannelName) != client._channel.end()) ? true : false;
 }
 
-/* bool Server::IsOperator(Client &client, const std::string& Nick)
+bool Server::IsOperator(Client &client, const std::string& ChannelName)
 {
-    return client._channel->getOperator()->_nick == client._nick;
-} */
+    return _channels.at(ChannelName)->getOperator()->_nick == client._nick;
+}
 
 bool Server::HasChannelKey(const std::string &ChannelName)
 {
-    std::string NewKey = _channels.at(ChannelName)->getKey();
-    return !NewKey.empty();
+    return !_channels.at(ChannelName)->getKey().empty();
 }
-
-/* bool Server::IsKeyWrong(const std::string &ChannelName, const std::string &Key)
-{
-    if (HasChannelKey(ChannelName))
-    {
-        if (_channels.at(ChannelName)->getKey() == Key)
-            return false;
-        return true;
-    }
-    return false;
-} */
 
 bool Server::IsChannelLimitFull(const std::string &ChannelName)
 {
     return _channels.at(ChannelName)->getMembers().size() == _channels.at(ChannelName)->_clientLimit;
 }
 
+// Always use under IsExistClient!!!
 Client &Server::findClient(const std::string &NickName)
 {
     for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients.end(); it++)
@@ -71,18 +60,25 @@ Client &Server::findClient(const std::string &NickName)
     return *_clients[-1];
 }
 
-int Server::ParamsSizeControl(std::vector<std::string> params, size_t necessary, size_t optional)
+int Server::ParamsSizeControl(Client& client, const std::string& Command, std::vector<std::string> params, size_t necessary, size_t optional)
 {
+    int err = 0;
     if (params.size() < necessary)
-        return -1;
+        err = -1;
     else if(params.size() > necessary + optional)
-        return 1;
+        err = 1;
     for (size_t i = 0; i < params.size(); i++)
     {
-        if(params[i].empty())
-            return -1;
+        if(params[i].empty()){
+            err = -1;
+            break;
+        }
     }
-    return 0;
+    if (err == -1)
+        sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, Command));
+    else if (err == 1)
+        sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, Command, "Excessive argument is given"));
+    return err;
 }
 
 enum Prefix Server::PrefixControl(std::string str)

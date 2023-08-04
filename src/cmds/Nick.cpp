@@ -14,19 +14,9 @@ Message Examples:
 void Server::Nick(Client &client, std::vector<std::string> params)
 {
     if (client._status == None)
-    {
-        sendServerToClient(client, ERR_NOTREGISTERED(client._nick));
+        return sendServerToClient(client, ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "NICK", params, 1, 0) != 0)
         return;
-    }
-    int err = ParamsSizeControl(params, 1, 0);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("NICK")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("NICK"), std::string("Excessive argument is given")));
-        return;
-    }
     if (InvalidLetter(params[0]) || InvalidPrefix(params[0]))
         sendServerToClient(client, ERR_ERRONEUSNICKNAME(params[0]));
     else if (IsExistClient(params[0]))

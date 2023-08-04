@@ -1,19 +1,12 @@
 #include "../../inc/Server.hpp"
 
-// ERR_NEEDMOREPARAMS(Command)
-// ERR_ALREADYREGISTERED()
-// ERR_PASSWDMISMATCH()
+// ERR_NEEDMOREPARAMS(Command)*
+// ERR_ALREADYREGISTERED()*
+// ERR_PASSWDMISMATCH()*
 void Server::Pass(Client &client, std::vector<std::string> params)
 {
-    int err = ParamsSizeControl(params, 1, 0);
-    if (err != 0)
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("PASS")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("PASS"), std::string("Excessive argument is given")));
+    if (ParamsSizeControl(client, "PASS", params, 1, 0) != 0)
         return;
-    }
     switch (client._status)
     {
     case None:

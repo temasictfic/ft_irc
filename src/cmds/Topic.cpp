@@ -11,19 +11,9 @@
 void Server::Topic(Client &client, std::vector<std::string> params)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
-    int err = ParamsSizeControl(params, 1, 10);
-    if ( err != 0)  
-    {
-        if (err == -1)
-            sendServerToClient(client, ERR_NEEDMOREPARAMS(client._nick, std::string("TOPIC")));
-        else if (err == 1)
-            sendServerToClient(client, ERR_UNKNOWNERROR(client._nick, std::string("TOPIC"), std::string("Excessive argument is given")));
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
+    if (ParamsSizeControl(client, "TOPIC", params, 1, 10) != 0)  
         return;
-    }
     size_t count = params.size();
     std::string message;
     if(count > 1)
@@ -36,12 +26,12 @@ void Server::Topic(Client &client, std::vector<std::string> params)
     {
         if(count == 1)
             sendServerToClient(client, RPL_TOPIC(client._nick, params[0], _channels.at(params[0])->_topic));
-        else if ((_channels.at(params[0])->_mode & ProtectedTopic) &&  _channels.at(params[0])->getOperator()->_nick == client._nick && (message.empty() || message == " "))
+        else if ((_channels.at(params[0])->_mode & ProtectedTopic) &&  IsOperator(client, params[0]) && (message.empty() || message == " "))
         {
             _channels.at(params[0])->_topic = "";
             sendServerToChannel(params[0], RPL_NOTOPIC(client._nick, params[0]));
         }
-        else if ((_channels.at(params[0])->_mode & ProtectedTopic)  &&  _channels.at(params[0])->getOperator()->_nick == client._nick)
+        else if ((_channels.at(params[0])->_mode & ProtectedTopic)  &&  IsOperator(client, params[0]))
         {
              _channels.at(params[0])->_topic = message;
             sendServerToChannel(params[0], RPL_TOPIC(client._nick,params[0],message));

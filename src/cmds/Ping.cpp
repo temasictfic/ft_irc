@@ -5,9 +5,7 @@
 void Server::Ping(Client &client, std::vector<std::string>)
 {
     if(client._status != UsernameRegistered)
-    {
-        sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
-        return ;
-    }
+        return sendServerToClient(client,ERR_NOTREGISTERED(client._nick));
+
     sendServerToClient(client, "Pong"); // params[0] as token?
 }
