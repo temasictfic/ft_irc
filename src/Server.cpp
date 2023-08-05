@@ -166,7 +166,6 @@ void Server::Serve(fd_set readSet)
         int clientSocket = (*client)->getSocketFd();
         if ((*client)->_online == false)
         {
-            //sendServerToClient(**client, QUIT((*client)->_nick, ""));
             close(clientSocket);
             client = _clients.erase(client);
             continue;
@@ -178,32 +177,23 @@ void Server::Serve(fd_set readSet)
 
             // Read data from the client socket
             int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
-            if (bytesRead == -1)
-            {
-                // Handle recv error or client disconnection
-                if (errno == ECONNRESET || errno == ENETRESET || errno == ECONNABORTED)
-                    std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
-                else
-                    std::cerr << "Failed to read from client socket.\n";
-                Quit(**client, std::vector<std::string>());
-                //close(clientSocket);
-                //client = _clients.erase(client);
-                continue;
-            }
             if (bytesRead == 0)
             {
-                // Connection closed by the client
                 std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
-
                 Quit(**client, std::vector<std::string>());
-                // Close the client socket
-                //close(clientSocket);
-
-                // Remove the client from the vector and continue to the next client
-                //client = _clients.erase(client);
                 continue;
             }
-            // check message length < 1024 including /r/n
+            if (bytesRead == -1)
+            {
+                // Connection closed by the client
+                // Handle recv error or client disconnection
+/*                 if (errno == ECONNRESET || errno == ENETRESET || errno == ECONNABORTED)
+                    std::cout << "Client disconnected. Socket descriptor: " << clientSocket << "\n";
+                else */
+                std::cerr << "Failed to read from client socket.\n";
+                Quit(**client, std::vector<std::string>());
+                continue;
+            }
             //  Process received data and handle IRC commands
             std::string message(buffer, bytesRead);
             std::cout << "Received data from client: " << message << "\n";
@@ -221,7 +211,7 @@ void Server::ProcessCommand(std::string &message, Client *client)
     std::vector<std::string> str = split(message,"\r\n");
     for(std::vector<std::string>::iterator it = str.begin(); it != str.end()-1; ++it)
     {
-        std::cout <<"split: " << *it << "\n";
+        std::cout <<"line: " << *it << "\n";
         size_t spacePos = (it->find(' ')  != std::string::npos) ? it->find(' ') : it->size();
         std::string command = it->substr(0, spacePos);
         std::cout <<"cmd: " << command << "\n";
@@ -257,17 +247,6 @@ void Server::sendServerToChannel(const std::string &ChannelName, const std::stri
         }
     }
 }
-
-/* int Server::sendClientToClient(Client &sender, Client &reciever, const std::string &message)
-{
-    std::string formattedMessage = message + "\r\n";
-    if (send(reciever.getSocketFd(), formattedMessage.c_str(), formattedMessage.length(), 0) == -1)
-    {
-        std::cerr << "Failed to send chat message between " << sender._nick << " -> " << reciever._nick << "\n";
-        return -1;
-    }
-    return 0;
-} */
 
 void Server::sendClientToChannel(Client &sender, const std::string &ChannelName, const std::string &message)
 {

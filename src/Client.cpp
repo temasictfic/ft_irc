@@ -8,8 +8,7 @@ Client::Client(int clientSocket) : _hostname("unknown"), _nick(""), _username(""
 
 Client::~Client()
 {
-
-    
+    //delete this;   
 }
 
 int Client::getSocketFd() const

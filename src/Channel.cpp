@@ -45,7 +45,6 @@ void Channel::addMember(Client &client)
 
 void Channel::addBanned(Client &client)
 {
-    client._channel.erase(_name);
     _banned.push_back(&client);
 }
 
