@@ -18,7 +18,9 @@ void Server::Part(Client &client, std::vector<std::string> params)
         {
             sendServerToClient(client, PART(client._nick, params[0] + " :closed the channel"));
             _channels.at(params[0])->removeMember(client);
+            Channel* chan = _channels.at(params[0]);
             _channels.erase(params[0]);
+            delete chan;
         }
         else if (IsOperator(client, params[0]) && _channels.at(params[0])->getMembers().size() > 1)
         {

@@ -14,7 +14,7 @@ else
   }
 fi
 
-SERVER='localhost'
+SERVER='10.12.4.4' #'localhost'
 PORT='6667'
 INTERVAL='1'
 NAME=$(generate_random_name)

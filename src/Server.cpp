@@ -167,7 +167,9 @@ void Server::Serve(fd_set readSet)
         if ((*client)->_online == false)
         {
             close(clientSocket);
+            Client* dead = *client;
             client = _clients.erase(client);
+            delete dead;
             continue;
         }
         if (FD_ISSET(clientSocket, &readSet))
