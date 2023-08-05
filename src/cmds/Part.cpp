@@ -22,16 +22,16 @@ void Server::Part(Client &client, std::vector<std::string> params)
         }
         else if (IsOperator(client, params[0]) && _channels.at(params[0])->getMembers().size() > 1)
         {
-            _channels.at(params[0])->removeMember(client);
             sendServerToChannel(params[0], PART(client._nick, params[0]));
+            _channels.at(params[0])->removeMember(client);
             Client* next_op = _channels.at(params[0])->getMembers().front();
             _channels[params[0]]->setOperator(next_op);
             sendServerToChannel(params[0], MODE(std::string("ircserv"), params[0], "+o", next_op->_nick));
         }
         else
         {
-            _channels.at(params[0])->removeMember(client);
             sendServerToChannel(params[0], PART(client._nick, params[0]));
+            _channels.at(params[0])->removeMember(client);
         }
     }
     else

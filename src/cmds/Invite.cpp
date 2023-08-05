@@ -30,11 +30,11 @@ void Server::Invite(Client &client, std::vector<std::string> params)
             Join(invited, channel);
         else if(IsBannedClient(invited,params[0]) && IsOperator(client, params[0]))
         {
-            std::vector<std::string> params;
-            params.push_back(params[0]);
-            params.push_back("-b");
-            params.push_back(invited._nick);
-            Mode(client, params);
+            std::vector<std::string> par;
+            par.push_back(params[0]);
+            par.push_back("-b");
+            par.push_back(invited._nick);
+            Mode(client, par);
             sendServerToClient(client, RPL_INVITING(client._nick,invited._nick,params[0]));
             sendServerToClient(invited, INVITE(client._nick,invited._nick,params[0]));
             Join(invited, channel);
